@@ -1,0 +1,97 @@
+sudo: false
+language:
+  c
+
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env:
+        - NAME="gcc 4.9"
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+        - NAME="gcc 5"
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - NAME="gcc 6"
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - NAME="gcc 7"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+      env:
+        - NAME="clang 3.6"
+        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+        - NAME="clang 4.0"
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - NAME="clang"
+        - MATRIX_EVAL="CC=clang"
+
+    - os: osx
+      osx_image: xcode9
+      env:
+        - NAME="clang"
+        - MATRIX_EVAL="CC=clang"
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - cc -v
+
+install:
+  - sudo apt-get install libglib2.0-dev
+
+script:
+  - make
+
+notifications:
+  email: false
