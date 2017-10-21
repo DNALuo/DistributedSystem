@@ -88,7 +88,8 @@ before_install:
   - cc -v
 
 install:
-  - sudo apt-get install libglib2.0-dev
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libglib2.0-dev; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install glib; fi
 
 script:
   - make
