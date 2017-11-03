@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.8)
 
 project(DistributedSystems)
 
+# GLib
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLIB REQUIRED glib-2.0>=2.23)
+include_directories(${GLIB_INCLUDE_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -10,16 +16,20 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR})
 
-set(MESSAGE_FILE msg)
+foreach(TASK psu_dist_lock_mgr)
+    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg.h ${TASK}_msg_clnt.c ${TASK}_msg_svc.c
+            COMMAND "rpcgen"
+            ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            COMMENT "Generating ${TASK}_msg from ${TASK}_msg.x")
 
-ADD_CUSTOM_COMMAND(OUTPUT ${MESSAGE_FILE}.h ${MESSAGE_FILE}_clnt.c ${MESSAGE_FILE}_svc.c
-        COMMAND "rpcgen"
-        ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${MESSAGE_FILE}.x
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${MESSAGE_FILE}.x
-        COMMENT "Generating ${MESSAGE_FILE} from ${MESSAGE_FILE}.x")
+    add_executable(${TASK}_test ${TASK}_test.c
+            ${TASK}_msg_clnt.c
+            ${TASK}.c)
 
-add_executable(client hello_world_client.c
-        ${MESSAGE_FILE}_clnt.c)
+    add_executable(${TASK}_server ${TASK}_server.c
+            ${TASK}_msg_svc.c)
 
-add_executable(server hello_world_server.c
-        ${MESSAGE_FILE}_svc.c)
+    target_link_libraries(${TASK}_test ${GLIB_LIBRARIES})
+    target_link_libraries(${TASK}_server ${GLIB_LIBRARIES})
+endforeach()
