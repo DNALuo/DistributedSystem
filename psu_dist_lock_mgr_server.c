@@ -70,7 +70,6 @@ void* init_lock_mgr_1_svc(char **node_str, struct svc_req *req)
 
 void* acquire_lock_1_svc(int* number, struct svc_req *req)
 {
-  FILE *fp = fopen("/Users/ryan/Desktop/Code/DistributedSystem/test.txt", "w");
   assert(nodes != NULL);
   //fprintf(fp, "Acquring lock number %d.\n", *number);
 
@@ -87,7 +86,6 @@ void* acquire_lock_1_svc(int* number, struct svc_req *req)
     pack->seqno = lockvar->myseqno;
     request_1(pack, client);
   }
-  fclose(fp);
   return NULL;
 }
 
