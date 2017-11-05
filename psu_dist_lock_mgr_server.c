@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <glib.h>
+#include <pthread.h>
 #include "psu_dist_lock_mgr_msg.h"
 
 static char **nodes = NULL;
