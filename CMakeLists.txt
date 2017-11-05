@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 2.8)
 
 project(DistributedSystems)
 
@@ -17,7 +17,10 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(TASK psu_dist_lock_mgr)
-    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg.h ${TASK}_msg_clnt.c ${TASK}_msg_svc.c
+    ADD_CUSTOM_COMMAND(OUTPUT
+                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_clnt.c
+                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_svc.c
             COMMAND "rpcgen"
             ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
