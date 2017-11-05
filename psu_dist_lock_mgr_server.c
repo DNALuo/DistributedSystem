@@ -15,11 +15,12 @@ typedef struct _LockVar {
   int myseqno;
   int highestseqno;
   bool requesting_cs;
+  GArray *deffered;
 } LockVar;
 
 GArray *lockvar_list = NULL;
 
-LockVar *find_lockvar(int lock_number)
+LockVar *find_lockvar(int lock_number, bool create)
 {
   // search in the list to find the lock variables
   LockVar *lockvar = NULL;
@@ -28,13 +29,14 @@ LockVar *find_lockvar(int lock_number)
     if(g_array_index(lockvar_list, LockVar *, i)->lock_number == lock_number)
       lockvar = g_array_index(lockvar_list, LockVar *, i);
   }
-  if(lockvar == NULL)
+  if(lockvar == NULL && create)
   {
     lockvar = (LockVar *)malloc(sizeof(LockVar));
     lockvar->lock_number = lock_number;
     lockvar->highestseqno = 0;
     lockvar->myseqno = 0;
     lockvar->requesting_cs = false;
+    lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
     g_array_append_val(lockvar_list, lockvar);
   }
   return lockvar;
@@ -73,7 +75,7 @@ void* acquire_lock_1_svc(int* number, struct svc_req *req)
   assert(nodes != NULL);
   //fprintf(fp, "Acquring lock number %d.\n", *number);
 
-  LockVar *lockvar = find_lockvar(*number);
+  LockVar *lockvar = find_lockvar(*number, true);
   lockvar->requesting_cs = true;
   lockvar->myseqno = lockvar->highestseqno + 1;
   for(int i = 0; i < num_nodes; ++i)
@@ -91,7 +93,17 @@ void* acquire_lock_1_svc(int* number, struct svc_req *req)
 
 void* release_lock_1_svc(int* number, struct svc_req *req)
 {
-  assert(nodes != NULL);
+  LockVar * lockvar = find_lockvar(*number, false);
+  assert(lockvar != NULL);
+  for(int i = 0; i < lockvar->deffered->len; ++i)
+  {
+    pthread_mutex_unlock(g_array_index(lockvar->deffered, pthread_mutex_t *, i));
+    pthread_mutex_destroy(g_array_index(lockvar->deffered, pthread_mutex_t *, i));
+  }
+
+  g_array_free(lockvar->deffered, FALSE);
+  lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
+
   return NULL;
 }
 
