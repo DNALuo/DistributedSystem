@@ -109,14 +109,20 @@ void* release_lock_1_svc(int* number, struct svc_req *req)
 
 void* request_1_svc(RequestPack *pack, struct svc_req *req)
 {
-  LockVar *lockvar = find_lockvar(pack->lock_number);
+  LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);
   // TODO: solve the id part
   if(lockvar->requesting_cs &&
     (pack->seqno > lockvar->myseqno || (pack->seqno == lockvar->myseqno && pack->nodeid > 0)))
   {
     pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-    //pthread_mutex_init(mutex, );
+    pthread_mutex_init(mutex, NULL);
+
+    // lock the request
+    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(mutex);
+    g_array_append_val(lockvar->deffered, mutex);
+
   } else {
     return NULL;
   }
