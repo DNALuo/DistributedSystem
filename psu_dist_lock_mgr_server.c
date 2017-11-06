@@ -119,11 +119,11 @@ void* request_1_svc(RequestPack *pack, struct svc_req *req)
     pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(mutex, NULL);
 
+    g_array_append_val(lockvar->deffered, mutex);
+
     // lock the request
     pthread_mutex_lock(mutex);
     pthread_mutex_lock(mutex);
-    g_array_append_val(lockvar->deffered, mutex);
-
   }
   return NULL;
 }
