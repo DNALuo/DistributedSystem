@@ -21,11 +21,16 @@ foreach(TASK psu_dist_lock_mgr)
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.h
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_clnt.c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_svc.c
-                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
             COMMAND "rpcgen"
-            ARGS -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            ARGS -M -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
-            COMMENT "Generating ${TASK}_msg from ${TASK}_msg.x")
+            COMMENT "Generating ${TASK}_msg_svc.c/${TASK}_msg_clnt.c/${TASK}_msg.h from ${TASK}_msg.x")
+
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
+            COMMAND "rpcgen"
+            ARGS -M -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            COMMENT "Generating ${TASK}_msg_xdr.c from ${TASK}_msg.x")
 
     add_executable(${TASK}_test ${TASK}_test.c
             ${TASK}_msg_clnt.c
