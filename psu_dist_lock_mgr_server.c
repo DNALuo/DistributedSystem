@@ -133,3 +133,9 @@ bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
   }
   return true;
 }
+
+int psu_dist_lock_mgr_1_freeresult(SVCXPRT *transp,xdrproc_t xdr_result, caddr_t result)
+{
+  xdr_free(xdr_result,result);
+  return 1;
+}
