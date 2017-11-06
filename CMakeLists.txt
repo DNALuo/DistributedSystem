@@ -52,6 +52,6 @@ foreach(TASK psu_dist_lock_mgr)
             ${TASK}_msg_svc.c
             ${TASK}_msg_xdr.c)
 
-    target_link_libraries(${TASK}_test ${GLIB_LIBRARIES})
-    target_link_libraries(${TASK}_server ${GLIB_LIBRARIES})
+    target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} thread nsl)
+    target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} thread nsl)
 endforeach()
