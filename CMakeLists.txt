@@ -26,7 +26,7 @@ foreach(TASK psu_dist_lock_mgr)
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             COMMENT "Generating ${TASK}_msg.h/${TASK}_msg_svc.c/${TASK}_msg_clnt.c from ${TASK}_msg.x")
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg_xdr.c
+    ADD_CUSTOM_COMMAND(OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
             COMMAND "rpcgen"
             ARGS -M -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
