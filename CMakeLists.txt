@@ -17,18 +17,27 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(TASK psu_dist_lock_mgr)
-    ADD_CUSTOM_COMMAND(OUTPUT
-                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.h
-                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_clnt.c
-                ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_svc.c
+    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg.h
             COMMAND "rpcgen"
-            ARGS -M ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            ARGS -M -h ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_BINARY_DIR}/${TASK}_msg.h
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
-            COMMENT "Generating ${TASK}_msg_svc.c/${TASK}_msg_clnt.c/${TASK}_msg.h from ${TASK}_msg.x")
+            COMMENT "Generating ${TASK}_msg.h from ${TASK}_msg.x")
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
+    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg_svc.c
             COMMAND "rpcgen"
-            ARGS -M -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_xdr.c
+            ARGS -M -m ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_BINARY_DIR}/${TASK}_msg_svc.c
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            COMMENT "Generating ${TASK}_msg_svc.c from ${TASK}_msg.x")
+
+    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg_clnt.c
+            COMMAND "rpcgen"
+            ARGS -M -l ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_BINARY_DIR}/${TASK}_msg_clnt.c
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            COMMENT "Generating ${TASK}_msg_clnt.c from ${TASK}_msg.x")
+
+    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg_xdr.c
+            COMMAND "rpcgen"
+            ARGS -M -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_BINARY_DIR}/${TASK}_msg_xdr.c
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             COMMENT "Generating ${TASK}_msg_xdr.c from ${TASK}_msg.x")
 
