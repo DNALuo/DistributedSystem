@@ -22,7 +22,7 @@ foreach(TASK psu_dist_lock_mgr)
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_clnt.c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_svc.c
             COMMAND "rpcgen"
-            ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            ARGS -a ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             COMMENT "Generating ${TASK}_msg from ${TASK}_msg.x")
 
@@ -31,7 +31,9 @@ foreach(TASK psu_dist_lock_mgr)
             ${TASK}.c)
 
     add_executable(${TASK}_server ${TASK}_server.c
-            ${TASK}_msg_svc.c)
+            ${TASK}_msg_clnt.c
+            ${TASK}_msg_svc.c
+            ${TASK}_msg_xdr.c)
 
     target_link_libraries(${TASK}_test ${GLIB_LIBRARIES})
     target_link_libraries(${TASK}_server ${GLIB_LIBRARIES})
