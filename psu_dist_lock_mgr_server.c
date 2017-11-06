@@ -62,7 +62,8 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   int node_index = 0;
   while (pch != NULL)
   {
-    nodes[node_index] = pch;
+    nodes[node_index] = (char *)malloc((strlen(pch) + 1) * sizeof(char));
+    strncpy(nodes[node_index], pch, strlen(pch));
     ++node_index;
     pch = strtok(NULL, ",");
   }
@@ -73,7 +74,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   printf("Nodes information lists below:\n");
   for(int i = 0; i < num_nodes; ++i)
     printf("node[%d] = %s\n", i, nodes[i]);
-  
+
   return true;
 }
 
