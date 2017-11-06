@@ -22,7 +22,7 @@ foreach(TASK psu_dist_lock_mgr)
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_clnt.c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg_svc.c
             COMMAND "rpcgen"
-            ARGS -a ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
+            ARGS -c ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             COMMENT "Generating ${TASK}_msg from ${TASK}_msg.x")
 
