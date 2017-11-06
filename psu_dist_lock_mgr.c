@@ -29,7 +29,8 @@ void psu_init_lock_mgr(char** nodes, int num_nodes)
   }
   CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
   printf("Calling init_lock_mgr with %s.\n", node_str);
-  init_lock_mgr_1(&node_str, NULL, client);
+  void *result = NULL;
+  init_lock_mgr_1(&node_str, &result, client);
   clnt_destroy(client);
   has_initialized = true;
 }
@@ -43,7 +44,8 @@ void psu_acquire_lock(int lock_number)
   }
   CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
   printf("Calling acquire_lock with number %d.\n", lock_number);
-  acquire_lock_1(&lock_number, NULL, client);
+  void *result = NULL;
+  acquire_lock_1(&lock_number, &result, client);
   clnt_destroy(client);
 }
 
@@ -56,6 +58,7 @@ void psu_release_lock(int lock_number)
   }
   CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
   printf("Calling release_lock with number %d.\n", lock_number);
-  release_lock_1(&lock_number, NULL, client);
+  void *result = NULL;
+  release_lock_1(&lock_number, &result, client);
   clnt_destroy(client);
 }

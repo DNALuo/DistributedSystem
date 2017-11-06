@@ -87,7 +87,8 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     // TODO: solve the id part
     pack->nodeid = 0;
     pack->seqno = lockvar->myseqno;
-    request_1(pack, NULL, client);
+    void *result = NULL;
+    request_1(pack, &result, client);
   }
   return true;
 }
