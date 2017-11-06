@@ -46,6 +46,7 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
+  printf("Initializing lock manager with %s\n", *node_str);
   char *str = *node_str;
   for(num_nodes = 0; *str != '\0'; ++str)
   {
@@ -68,13 +69,14 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
+  printf("Lock manager initialized.\n");
   return true;
 }
 
 bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
   assert(nodes != NULL);
-  //fprintf(fp, "Acquring lock number %d.\n", *number);
+  printf("Acquiring lock number %d.\n", *number);
 
   LockVar *lockvar = find_lockvar(*number, true);
   lockvar->requesting_cs = true;
@@ -88,6 +90,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     pack->nodeid = 0;
     pack->seqno = lockvar->myseqno;
     void *result = NULL;
+    printf("Send request to %s\n", nodes[i]);
     request_1(pack, &result, client);
   }
   return true;
@@ -111,6 +114,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 
 bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
 {
+  printf("Getting request for lock number %d, seqno is %d.\n", pack->lock_number, pack->seqno);
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);
   // TODO: solve the id part
@@ -119,6 +123,7 @@ bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
   {
     pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(mutex, NULL);
+    printf("Defer the reply for lock number %d.\n", pack->lock_number);
 
     g_array_append_val(lockvar->deffered, mutex);
 
