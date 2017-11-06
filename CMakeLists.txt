@@ -17,9 +17,9 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(TASK psu_dist_lock_mgr)
-    ADD_CUSTOM_COMMAND(OUTPUT ${TASK}_msg.h
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.h
             COMMAND "rpcgen"
-            ARGS -M -h ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_BINARY_DIR}/${TASK}_msg.h
+            ARGS -M -h ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x -o ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.h
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}_msg.x
             COMMENT "Generating ${TASK}_msg.h from ${TASK}_msg.x")
 
