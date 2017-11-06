@@ -42,10 +42,12 @@ foreach(TASK psu_dist_lock_mgr)
             COMMENT "Generating ${TASK}_msg_xdr.c from ${TASK}_msg.x")
 
     add_executable(${TASK}_test ${TASK}_test.c
+            ${TASK}_msg.h
             ${TASK}_msg_clnt.c
             ${TASK}.c)
 
     add_executable(${TASK}_server ${TASK}_server.c
+            ${TASK}_msg.h
             ${TASK}_msg_clnt.c
             ${TASK}_msg_svc.c
             ${TASK}_msg_xdr.c)
