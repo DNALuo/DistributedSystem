@@ -44,7 +44,7 @@ LockVar *find_lockvar(int lock_number, bool create)
 }
 
 
-void* init_lock_mgr_1_svc(char **node_str, struct svc_req *req)
+bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
   char *str = *node_str;
   for(num_nodes = 0; *str != '\0'; ++str)
@@ -68,10 +68,10 @@ void* init_lock_mgr_1_svc(char **node_str, struct svc_req *req)
 
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
-  return NULL;
+  return true;
 }
 
-void* acquire_lock_1_svc(int* number, struct svc_req *req)
+bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
   assert(nodes != NULL);
   //fprintf(fp, "Acquring lock number %d.\n", *number);
@@ -89,10 +89,10 @@ void* acquire_lock_1_svc(int* number, struct svc_req *req)
     pack->seqno = lockvar->myseqno;
     request_1(pack, client);
   }
-  return NULL;
+  return true;
 }
 
-void* release_lock_1_svc(int* number, struct svc_req *req)
+bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
   LockVar * lockvar = find_lockvar(*number, false);
   assert(lockvar != NULL);
@@ -105,10 +105,10 @@ void* release_lock_1_svc(int* number, struct svc_req *req)
   g_array_free(lockvar->deffered, FALSE);
   lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
 
-  return NULL;
+  return true;
 }
 
-void* request_1_svc(RequestPack *pack, struct svc_req *req)
+bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
 {
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);
@@ -125,5 +125,5 @@ void* request_1_svc(RequestPack *pack, struct svc_req *req)
     pthread_mutex_lock(mutex);
     pthread_mutex_lock(mutex);
   }
-  return NULL;
+  return true;
 }
