@@ -70,6 +70,10 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
   printf("Lock manager initialized.\n");
+  printf("Nodes information lists below:\n");
+  for(int i = 0; i < num_nodes; ++i)
+    printf("node[%d] = %s\n", i, nodes[i]);
+  
   return true;
 }
 
