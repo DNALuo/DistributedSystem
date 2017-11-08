@@ -3,7 +3,9 @@
 
 int main(int argc, char **argv)
 {
-  char *nodes[] = {"127.0.0.1", "127.0.0.1", "127.0.0.1"};
+  char *nodes[1024];
+  for(int i = 1; i < argc; ++i)
+    nodes[i - 1] = argv[i];
   psu_init_lock_mgr(nodes, sizeof(nodes)/sizeof(nodes[0]));
   psu_acquire_lock(1);
   sleep(1);
