@@ -104,11 +104,9 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   data_ptr-> rqstp = rqstp;
   data_ptr-> transp = transp;
   pthread_t thread;
-  pthread_attr_t attr;
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  pthread_create(&thread, &attr, &psu_dist_lock_mgr_1_run, (void *)data_ptr);
-
-  printf("Thread created to run.\n");
+  pthread_create(&thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
+	pthread_detach(thread);
+	pthread_join(thread, NULL);
 }
 
 int main (int argc, char **argv)
