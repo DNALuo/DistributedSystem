@@ -106,7 +106,6 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   pthread_t thread;
   pthread_create(&thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
 	pthread_detach(thread);
-	pthread_join(thread, NULL);
 }
 
 int main (int argc, char **argv)
