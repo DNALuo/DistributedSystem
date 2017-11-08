@@ -13,7 +13,6 @@
 
 static void *psu_dist_lock_mgr_1_run(void *data)
 {
-  printf("Into it\n");
   // unpack the thread data
   struct thread_data
   {
@@ -36,7 +35,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	bool_t retval;
 	xdrproc_t _xdr_argument, _xdr_result;
 	bool_t (*local)(char *, void *, struct svc_req *);
-  printf("call proc %d.\n", rqstp->rq_proc);
+
 	switch (rqstp->rq_proc) {
 	case INIT_LOCK_MGR:
 		_xdr_argument = (xdrproc_t) xdr_wrapstring;
@@ -82,7 +81,6 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	if (!psu_dist_lock_mgr_1_freeresult (transp, _xdr_result, (caddr_t) &result))
 		fprintf (stderr, "%s", "unable to free results");
 
-  printf("Thread terminated \n");
 	return NULL;
 }
 
@@ -94,9 +92,9 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
     return;
   }
 
-  printf("Procedure # is %d. \n", rqstp->rq_proc);
-  printf("INIT_LOCK_MGR is %d.\n", INIT_LOCK_MGR);
+  char *procedures[] = {"NULLPROC", "INIT_LOCK_MGR", "ACQUIRE_LOCK", "RELEASE_LOCK", "REQUEST"};
 
+  printf("Procedure calls %s\n", procedures[rqstp->rq_proc]);
 
   struct thread_data
   {
@@ -138,7 +136,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "%s", "unable to register (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, tcp).");
 		exit(1);
 	}
-
+  printf("Server up and running...\n");
 	svc_run ();
 	fprintf (stderr, "%s", "svc_run returned");
 	exit (1);

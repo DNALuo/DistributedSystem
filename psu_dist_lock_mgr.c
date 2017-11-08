@@ -33,6 +33,7 @@ void psu_init_lock_mgr(char** nodes, int num_nodes)
   init_lock_mgr_1(&node_str, &result, client);
   clnt_destroy(client);
   has_initialized = true;
+  printf("Call init_lock_mgr finished.\n");
 }
 
 void psu_acquire_lock(int lock_number)
@@ -47,6 +48,7 @@ void psu_acquire_lock(int lock_number)
   void *result = NULL;
   acquire_lock_1(&lock_number, &result, client);
   clnt_destroy(client);
+  printf("Lock %d Acquired.\n", lock_number);
 }
 
 void psu_release_lock(int lock_number)
@@ -61,4 +63,5 @@ void psu_release_lock(int lock_number)
   void *result = NULL;
   release_lock_1(&lock_number, &result, client);
   clnt_destroy(client);
+  printf("Lock %d Released.\n", lock_number);
 }

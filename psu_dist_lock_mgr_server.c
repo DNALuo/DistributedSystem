@@ -46,7 +46,6 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
-  printf("Initializing lock manager with %s\n", *node_str);
   char *str = *node_str;
   for(num_nodes = 0; *str != '\0'; ++str)
   {
@@ -71,8 +70,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
-  printf("Lock manager initialized.\n");
-  printf("Nodes information lists below:\n");
+  printf("Lock manager initialized, nodes information lists below:\n");
   for(int i = 0; i < num_nodes; ++i)
     printf("node[%d] = %s\n", i, nodes[i]);
 
@@ -99,6 +97,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     printf("Send request to %s\n", nodes[i]);
     request_1(pack, &result, client);
   }
+  printf("Lock %d Acquired.\n", *number);
   return true;
 }
 
@@ -114,7 +113,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 
   g_array_free(lockvar->deffered, FALSE);
   lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
-
+  printf("Lock %d Released.\n", *number);
   return true;
 }
 
