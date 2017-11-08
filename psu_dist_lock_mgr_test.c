@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-  char *nodes[] = {"localhost", "localhost", "localhost"};
+  char *nodes[] = {"127.0.0.1", "127.0.0.1", "127.0.0.1"};
   psu_init_lock_mgr(nodes, sizeof(nodes)/sizeof(nodes[0]));
   psu_acquire_lock(1);
   sleep(1);
