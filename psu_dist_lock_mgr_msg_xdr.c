@@ -8,7 +8,7 @@ bool_t xdr_RequestPack (XDR *xdrs, RequestPack *objp)
     return FALSE;
   if (!xdr_int (xdrs, &objp->seqno))
     return FALSE;
-  if (!xdr_string (xdrs, &objp->nodeip, 17))
+  if (!xdr_u_hyper(xdrs, &objp->mac))
     return FALSE;
   return TRUE;
 }

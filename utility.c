@@ -4,7 +4,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <stdbool.h>
 #include <string.h>
 #include <glib.h>
 #include "utility.h"
@@ -31,18 +30,48 @@ void get_local_ip_addresses(GArray *buf)
   freeifaddrs(addrs);
 }
 
-bool compare_ip(char *ip1, char *ip2)
+
+#ifdef AF_LINK
+#include <net/if_dl.h>
+uint8_t *get_ptr(struct ifaddrs *ifaptr)
 {
-  struct in_addr *ip1_addr = (struct in_addr *)malloc(sizeof(struct in_addr));
-  struct in_addr *ip2_addr = (struct in_addr *)malloc(sizeof(struct in_addr));
+  if (ifaptr->ifa_addr->sa_family == AF_LINK)
+    return (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
+  else
+    return NULL;
+}
+#endif
+#ifdef AF_PACKET
+#include <netpacket/packet.h>
+uint8_t *get_ptr(struct ifaddrs *ifaptr)
+{
+    if (ifaptr->ifa_addr->sa_family == AF_PACKET)
+        return (unsigned char *)((struct sockaddr_ll*)ifaptr->ifa_addr)->sll_addr;
+    else
+      return NULL;
+}
+#endif
 
-  inet_aton(ip1, ip1_addr);
-  inet_aton(ip2, ip2_addr);
+u_quad_t get_mac_address()
+{
+  struct ifaddrs *ifap;
+  u_quad_t result = 0;
+  uint8_t *ptr = NULL;
 
-  bool result = ip1_addr->s_addr < ip2_addr->s_addr;
+  if (getifaddrs(&ifap) == 0)
+  {
+    for (struct ifaddrs *ifaptr = ifap; ifaptr != NULL; ifaptr = ifaptr->ifa_next)
+    {
+      ptr = get_ptr(ifaptr);
 
-  free(ip1_addr);
-  free(ip2_addr);
-
+      if(ptr != NULL)
+      {
+        for (int i = 5; i >= 0; --i)
+          result |= (uint64_t) *ptr++ << (CHAR_BIT * i);
+        break;
+      }
+    }
+    freeifaddrs(ifap);
+  }
   return result;
 }
