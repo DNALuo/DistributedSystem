@@ -142,9 +142,9 @@ bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
   printf("Getting request for lock number %d, seqno is %d.\n", pack->lock_number, pack->seqno);
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);
-  // TODO: solve the id part
+
   if(lockvar->requesting_cs &&
-    (pack->seqno > lockvar->myseqno || (pack->seqno == lockvar->myseqno && pack->nodeid > 0)))
+    (pack->seqno > lockvar->myseqno || (pack->seqno == lockvar->myseqno && compare_ip(pack->nodeip, local_ip))))
   {
     pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(mutex, NULL);
