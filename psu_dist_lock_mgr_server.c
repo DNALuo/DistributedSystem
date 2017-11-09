@@ -4,11 +4,12 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <glib.h>
-#include <pthread.h>
+#include "utility.h"
 #include "psu_dist_lock_mgr_msg.h"
 
 static GArray *nodes = NULL;
 static unsigned int num_nodes = 0;
+static GArray *local_ip_addresses = NULL;
 
 // ricart & agrawala algorithm variables
 typedef struct _LockVar {
@@ -49,9 +50,21 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   // initialize the global nodes list variable
   nodes = g_array_new(FALSE, FALSE, sizeof(char *));
 
+  // get the local ip address
+  local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
+  get_local_ip_addresses(local_ip_addresses);
+
+  assert(local_ip_addresses->len != 0);
+
   int node_index = 0;
   for(char *pch = strtok(*node_str,","); pch != NULL; pch = strtok(NULL, ","))
   {
+    // ignore the local ip address
+    for(int i = 0; i < local_ip_addresses->len; ++i)
+    {
+      if(strcmp(pch, g_array_index(local_ip_addresses, char *, i)) == 0)
+        continue;
+    }
     char *buf = (char *)malloc((strlen(pch) + 1) * sizeof(char));
     strncpy(buf, pch, strlen(pch) + 1);
     g_array_append_val(nodes, buf);
