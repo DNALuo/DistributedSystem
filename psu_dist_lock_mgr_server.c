@@ -76,14 +76,17 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
         if(strcmp(pch, g_array_index(local_ip_addresses, char *, i)) == 0)
         {
           local_ip = g_array_index(local_ip_addresses, char *, i);
-          continue;
+          break;
         }
       }
     }
-    char *buf = (char *)malloc((strlen(pch) + 1) * sizeof(char));
-    strncpy(buf, pch, strlen(pch) + 1);
-    g_array_append_val(nodes, buf);
-    ++node_index;
+    if(local_ip != pch)
+    {
+      char *buf = (char *)malloc((strlen(pch) + 1) * sizeof(char));
+      strncpy(buf, pch, strlen(pch) + 1);
+      g_array_append_val(nodes, buf);
+      ++node_index;
+    }
   }
 
   // must have found the local ip in the nodes information
