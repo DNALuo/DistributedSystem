@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include "psu_dist_lock_mgr_msg.h"
 
-static char **nodes = NULL;
+static GArray *nodes = NULL;
 static unsigned int num_nodes = 0;
 
 // ricart & agrawala algorithm variables
@@ -46,33 +46,23 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
-  char *str = *node_str;
-  for(num_nodes = 0; *str != '\0'; ++str)
-  {
-    if(*str == ',')
-      ++num_nodes;
-  }
-  ++num_nodes;
-
   // initialize the global nodes list variable
-  nodes = (char **)malloc(sizeof(char *) * num_nodes);
+  nodes = g_array_new(FALSE, FALSE, sizeof(char *));
 
-  char *pch = strtok(*node_str,",");
   int node_index = 0;
-  while (pch != NULL)
+  for(char *pch = strtok(*node_str,","); pch != NULL; pch = strtok(NULL, ","))
   {
-    nodes[node_index] = (char *)malloc((strlen(pch) + 1) * sizeof(char));
-    strncpy(nodes[node_index], pch, strlen(pch));
-    nodes[node_index][strlen(pch)] = '\0';
+    char *buf = (char *)malloc((strlen(pch) + 1) * sizeof(char));
+    strncpy(buf, pch, strlen(pch) + 1);
+    g_array_append_val(nodes, buf);
     ++node_index;
-    pch = strtok(NULL, ",");
   }
 
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
   printf("Lock manager initialized, nodes information lists below:\n");
   for(int i = 0; i < num_nodes; ++i)
-    printf("node[%d] = %s\n", i, nodes[i]);
+    printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
 
   return true;
 }
@@ -94,7 +84,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     pack->nodeid = 0;
     pack->seqno = lockvar->myseqno;
     void *result = NULL;
-    printf("Send request to %s\n", nodes[i]);
+    printf("Send request to %s\n", g_array_index(nodes, char *, i));
     request_1(pack, &result, client);
   }
   printf("Lock %d Acquired.\n", *number);
