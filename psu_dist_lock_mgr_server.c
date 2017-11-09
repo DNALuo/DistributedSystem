@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <glib.h>
+#include <unistd.h>
 #include "utility.h"
 #include "psu_dist_lock_mgr_msg.h"
 
@@ -21,6 +22,12 @@ typedef struct _LockVar {
 } LockVar;
 
 GArray *lockvar_list = NULL;
+
+#define WAIT_FOR_TRUE(cond) \
+{ \
+  while(!(cond)) \
+    usleep(50000); \
+}
 
 LockVar *find_lockvar(int lock_number, bool create)
 {
@@ -46,15 +53,18 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 void initialize_global_variable()
 {
-  if(!has_initialized)
+  static bool has_var_initialized = false;
+  if(!has_var_initialized)
   {
     nodes = g_array_new(FALSE, FALSE, sizeof(char *));
     lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
     mac = get_mac_address();
+    assert(mac != 0);
+    assert(nodes != NULL);
+    assert(lockvar_list != NULL);
+    has_var_initialized = true;
   }
-  has_initialized = true;
 }
-
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
@@ -99,12 +109,16 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   for(int i = 0; i < nodes->len; ++i)
     printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
 
+  has_initialized = true;
+
   return true;
 }
 
 bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
-  assert(has_initialized);
+  // busy waiting for the initialization to finish
+  WAIT_FOR_TRUE(has_initialized);
+
   printf("Acquiring lock number %d.\n", *number);
 
   LockVar *lockvar = find_lockvar(*number, true);
@@ -127,7 +141,8 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 
 bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
-  assert(has_initialized);
+  // busy waiting for the initialization to finish
+  WAIT_FOR_TRUE(has_initialized);
   printf("Releasing Lock %d.\n", *number);
 
   LockVar * lockvar = find_lockvar(*number, false);
