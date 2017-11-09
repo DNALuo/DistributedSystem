@@ -2,7 +2,7 @@
 #include "psu_dist_lock_mgr_msg.h"
 
 /* Default timeout can be changed using clnt_control() */
-static struct timeval TIMEOUT = { 25, 0 };
+static struct timeval TIMEOUT = { 60 * 60 * 24, 0 };
 
 enum clnt_stat init_lock_mgr_1(char **argp, void *clnt_res, CLIENT *clnt)
 {
