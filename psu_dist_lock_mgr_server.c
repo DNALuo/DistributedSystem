@@ -109,8 +109,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
     pack->lock_number = *number;
-    // TODO: solve the id part
-    pack->nodeid = 0;
+    pack->nodeip = local_ip;
     pack->seqno = lockvar->myseqno;
     void *result = NULL;
     printf("Send request to %s\n", g_array_index(nodes, char *, i));
