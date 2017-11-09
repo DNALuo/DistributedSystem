@@ -1,6 +1,4 @@
-#ifndef _PSU_DIST_LOCK_MGR_MSG_H_RPCGEN
-#define _PSU_DIST_LOCK_MGR_MSG_H_RPCGEN
-
+#pragma once
 #include <rpc/rpc.h>
 
 #include <pthread.h>
@@ -65,4 +63,3 @@ extern bool_t xdr_RequestPack ();
 }
 #endif
 
-#endif /* !_PSU_DIST_LOCK_MGR_MSG_H_RPCGEN */

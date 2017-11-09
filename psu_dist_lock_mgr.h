@@ -1,3 +1,4 @@
+#pragma once
 // this function will be called to initialize the lock manager.
 // information about the nodes on which the lock manager is specified.
 void psu_init_lock_mgr(char** nodes, int num_nodes);
