@@ -98,7 +98,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   g_array_free(local_ip_addresses, TRUE);
 
   printf("Lock manager initialized, nodes information lists below:\n");
-  for(int i = 0; i < local_ip_addresses->len; ++i)
+  for(int i = 0; i < nodes->len; ++i)
     printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
 
   return true;
