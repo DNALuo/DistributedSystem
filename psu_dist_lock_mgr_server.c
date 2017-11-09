@@ -9,6 +9,7 @@
 
 static GArray *nodes = NULL;
 static u_quad_t mac = 0;
+static bool has_initialized = false;
 
 // ricart & agrawala algorithm variables
 typedef struct _LockVar {
@@ -45,7 +46,6 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 void initialize_global_variable()
 {
-  static bool has_initialized = false;
   if(!has_initialized)
   {
     nodes = g_array_new(FALSE, FALSE, sizeof(char *));
@@ -104,7 +104,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 
 bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
-  assert(nodes != NULL);
+  assert(has_initialized);
   printf("Acquiring lock number %d.\n", *number);
 
   LockVar *lockvar = find_lockvar(*number, true);
@@ -127,7 +127,9 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
 
 bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
+  assert(has_initialized);
   printf("Releasing Lock %d.\n", *number);
+
   LockVar * lockvar = find_lockvar(*number, false);
   assert(lockvar != NULL);
   for(int i = 0; i < lockvar->deffered->len; ++i)
@@ -142,6 +144,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
   return true;
 }
 
+// this function may be called before the initialization from other servers
 bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
 {
   initialize_global_variable();
