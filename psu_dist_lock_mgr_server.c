@@ -22,6 +22,7 @@ typedef struct _LockVar {
 } LockVar;
 
 GArray *lockvar_list = NULL;
+pthread_mutex_t lockvar_list_lock;
 
 #define WAIT_FOR_TRUE(cond) \
 { \
@@ -33,12 +34,18 @@ LockVar *find_lockvar(int lock_number, bool create)
 {
   // search in the list to find the lock variables
   LockVar *lockvar = NULL;
+  pthread_mutex_lock(&lockvar_list_lock);
   for(int i = 0; i < lockvar_list->len; ++i)
   {
     if(g_array_index(lockvar_list, LockVar *, i)->lock_number == lock_number)
+    {
       lockvar = g_array_index(lockvar_list, LockVar *, i);
+      pthread_mutex_unlock(&lockvar_list_lock);
+      return lockvar;
+    }
   }
-  if(lockvar == NULL && create)
+  // if not found
+  if(create)
   {
     lockvar = (LockVar *)malloc(sizeof(LockVar));
     lockvar->lock_number = lock_number;
@@ -48,6 +55,7 @@ LockVar *find_lockvar(int lock_number, bool create)
     lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
     g_array_append_val(lockvar_list, lockvar);
   }
+  pthread_mutex_unlock(&lockvar_list_lock);
   return lockvar;
 }
 
@@ -59,6 +67,7 @@ void initialize_global_variable()
     nodes = g_array_new(FALSE, FALSE, sizeof(char *));
     lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
     mac = get_mac_address();
+    pthread_mutex_init(&lockvar_list_lock, NULL);
     assert(mac != 0);
     assert(nodes != NULL);
     assert(lockvar_list != NULL);
