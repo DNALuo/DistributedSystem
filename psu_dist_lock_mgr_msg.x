@@ -1,7 +1,7 @@
 struct RequestPack{
     int lock_number;
     int seqno;
-    int nodeid;
+    string nodeip<17>;
 };
 
 program PSU_DIST_LOCK_MGR {

@@ -2,13 +2,13 @@
 
 bool_t xdr_RequestPack (XDR *xdrs, RequestPack *objp)
 {
-	register int32_t *buf;
+  register int32_t *buf;
 
-	 if (!xdr_int (xdrs, &objp->lock_number))
-		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->seqno))
-		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->nodeid))
-		 return FALSE;
-	return TRUE;
+  if (!xdr_int (xdrs, &objp->lock_number))
+    return FALSE;
+  if (!xdr_int (xdrs, &objp->seqno))
+    return FALSE;
+  if (!xdr_string (xdrs, &objp->nodeip, 17))
+    return FALSE;
+  return TRUE;
 }

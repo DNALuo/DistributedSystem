@@ -11,7 +11,7 @@ extern "C" {
 struct RequestPack {
 	int lock_number;
 	int seqno;
-	int nodeid;
+	char *nodeip;
 };
 typedef struct RequestPack RequestPack;
 
