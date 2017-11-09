@@ -80,7 +80,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	if (!psu_dist_lock_mgr_1_freeresult (transp, _xdr_result, (caddr_t) &result))
 		fprintf (stderr, "%s", "unable to free results");
 
-  printf("Procedure %s finishes with thread %p\n", procedures[rqstp->rq_proc], pthread_self());
+  printf("Procedure %s finishes with thread %p\n", procedures[rqstp->rq_proc], (void *)pthread_self());
 	return NULL;
 }
 
