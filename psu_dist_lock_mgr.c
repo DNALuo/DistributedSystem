@@ -27,7 +27,7 @@ void psu_init_lock_mgr(char** nodes, int num_nodes)
     if(i != num_nodes - 1)
       strcat(node_str, ",");
   }
-  CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
+  CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
   printf("Calling init_lock_mgr with %s.\n", node_str);
   void *result = NULL;
   init_lock_mgr_1(&node_str, &result, client);
@@ -43,7 +43,7 @@ void psu_acquire_lock(int lock_number)
     printf("Error!The lock manager hasn't been initialized.!\n");
     return;
   }
-  CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
+  CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
   printf("Calling acquire_lock with number %d.\n", lock_number);
   void *result = NULL;
   acquire_lock_1(&lock_number, &result, client);
@@ -58,7 +58,7 @@ void psu_release_lock(int lock_number)
     printf("Error!The lock manager hasn't been initialized.!\n");
     return;
   }
-  CLIENT *client = clnt_create("localhost", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
+  CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
   printf("Calling release_lock with number %d.\n", lock_number);
   void *result = NULL;
   release_lock_1(&lock_number, &result, client);
