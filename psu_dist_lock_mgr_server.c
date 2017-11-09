@@ -120,7 +120,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
   lockvar->myseqno = lockvar->highestseqno + 1;
   for(int i = 0; i < nodes->len; ++i)
   {
-    CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
+    CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
     pack->lock_number = *number;
     pack->nodeip = local_ip;
