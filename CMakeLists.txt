@@ -26,7 +26,8 @@ foreach(TASK psu_dist_lock_mgr)
             ${TASK}_msg.h
             ${TASK}_msg_clnt.c
             ${TASK}_msg_svc.c
-            ${TASK}_msg_xdr.c)
+            ${TASK}_msg_xdr.c
+            utility.c)
 
     target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} pthread)
     target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} pthread)
