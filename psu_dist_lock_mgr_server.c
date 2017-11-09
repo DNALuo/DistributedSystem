@@ -76,6 +76,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
         if(strcmp(pch, g_array_index(local_ip_addresses, char *, i)) == 0)
         {
           local_ip = g_array_index(local_ip_addresses, char *, i);
+          continue;
         }
       }
     }
