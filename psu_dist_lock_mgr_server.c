@@ -8,7 +8,7 @@
 #include "psu_dist_lock_mgr_msg.h"
 
 static GArray *nodes = NULL;
-static GArray *local_ip_addresses = NULL;
+static char *local_ip = NULL;
 
 // ricart & agrawala algorithm variables
 typedef struct _LockVar {
@@ -50,7 +50,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   nodes = g_array_new(FALSE, FALSE, sizeof(char *));
 
   // get the local ip address
-  local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
+  GArray *local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
   get_local_ip_addresses(local_ip_addresses);
 
   assert(local_ip_addresses->len != 0);
@@ -59,16 +59,33 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   for(char *pch = strtok(*node_str,","); pch != NULL; pch = strtok(NULL, ","))
   {
     // ignore the local ip address
-    for(int i = 0; i < local_ip_addresses->len; ++i)
+    if(local_ip == NULL)
     {
-      if(strcmp(pch, g_array_index(local_ip_addresses, char *, i)) == 0)
-        continue;
+      for(int i = 0; i < local_ip_addresses->len; ++i)
+      {
+        if(strcmp(pch, g_array_index(local_ip_addresses, char *, i)) == 0)
+        {
+          local_ip = g_array_index(local_ip_addresses, char *, i);
+        }
+      }
     }
     char *buf = (char *)malloc((strlen(pch) + 1) * sizeof(char));
     strncpy(buf, pch, strlen(pch) + 1);
     g_array_append_val(nodes, buf);
     ++node_index;
   }
+
+  // must have found the local ip in the nodes information
+  assert(local_ip != NULL);
+
+  // remove the rest of ip addresses
+  for(int i = 0; i < local_ip_addresses->len; ++i)
+  {
+    if(g_array_index(local_ip_addresses, char *, i) != local_ip)
+      free(g_array_index(local_ip_addresses, char *, i));
+  }
+
+  g_array_free(local_ip_addresses, TRUE);
 
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
@@ -87,7 +104,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
   LockVar *lockvar = find_lockvar(*number, true);
   lockvar->requesting_cs = true;
   lockvar->myseqno = lockvar->highestseqno + 1;
-  for(int i = 0; i < local_ip_addresses->len; ++i)
+  for(int i = 0; i < nodes->len; ++i)
   {
     CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
@@ -114,7 +131,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
     pthread_mutex_destroy(g_array_index(lockvar->deffered, pthread_mutex_t *, i));
   }
 
-  g_array_free(lockvar->deffered, FALSE);
+  g_array_free(lockvar->deffered, TRUE);
   lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
   printf("Lock %d Released.\n", *number);
   return true;
