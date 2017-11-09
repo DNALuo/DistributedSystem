@@ -8,7 +8,6 @@
 #include "psu_dist_lock_mgr_msg.h"
 
 static GArray *nodes = NULL;
-static unsigned int num_nodes = 0;
 static GArray *local_ip_addresses = NULL;
 
 // ricart & agrawala algorithm variables
@@ -74,7 +73,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   // initialize global lock_var_list
   lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
   printf("Lock manager initialized, nodes information lists below:\n");
-  for(int i = 0; i < num_nodes; ++i)
+  for(int i = 0; i < local_ip_addresses->len; ++i)
     printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
 
   return true;
@@ -88,7 +87,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
   LockVar *lockvar = find_lockvar(*number, true);
   lockvar->requesting_cs = true;
   lockvar->myseqno = lockvar->highestseqno + 1;
-  for(int i = 0; i < num_nodes; ++i)
+  for(int i = 0; i < local_ip_addresses->len; ++i)
   {
     CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
