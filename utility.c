@@ -67,8 +67,9 @@ u_quad_t get_mac_address()
       if(ptr != NULL)
       {
         for (int i = 5; i >= 0; --i)
-          result |= (uint64_t) *ptr++ << (CHAR_BIT * i);
-        break;
+          result |= (u_quad_t) *ptr++ << (CHAR_BIT * i);
+        if(result != 0)
+          break;
       }
     }
     freeifaddrs(ifap);
