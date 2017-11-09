@@ -8,6 +8,8 @@
 #define SIG_PF void(*)(int)
 #endif
 
+const char *procedures[] = {"NULLPROC", "INIT_LOCK_MGR", "ACQUIRE_LOCK", "RELEASE_LOCK", "REQUEST"};
+
 static void *psu_dist_lock_mgr_1_run(void *data)
 {
   // unpack the thread data
@@ -78,6 +80,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	if (!psu_dist_lock_mgr_1_freeresult (transp, _xdr_result, (caddr_t) &result))
 		fprintf (stderr, "%s", "unable to free results");
 
+  printf("Procedure %s finishes with thread %p\n", procedures[rqstp->rq_proc], pthread_self());
 	return NULL;
 }
 
@@ -89,10 +92,6 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
     return;
   }
 
-  char *procedures[] = {"NULLPROC", "INIT_LOCK_MGR", "ACQUIRE_LOCK", "RELEASE_LOCK", "REQUEST"};
-
-  printf("Procedure calls %s\n", procedures[rqstp->rq_proc]);
-
   struct thread_data
   {
     struct svc_req *rqstp;
@@ -100,9 +99,11 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   } *data_ptr=(struct thread_data*)malloc(sizeof(struct thread_data));
   data_ptr-> rqstp = rqstp;
   data_ptr-> transp = transp;
-  pthread_t thread;
-  pthread_create(&thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
-	pthread_detach(thread);
+  pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
+  pthread_create(thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
+  pthread_detach(*thread);
+
+  printf("Procedure calls %s, scheduled in thread %p\n", procedures[rqstp->rq_proc], thread);
 }
 
 int main (int argc, char **argv)
