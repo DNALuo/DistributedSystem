@@ -43,11 +43,21 @@ LockVar *find_lockvar(int lock_number, bool create)
   return lockvar;
 }
 
+void initialize_global_variable()
+{
+  static bool has_initialized = false;
+  if(!has_initialized)
+  {
+    nodes = g_array_new(FALSE, FALSE, sizeof(char *));
+    lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
+  }
+  has_initialized = true;
+}
+
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
-  // initialize the global nodes list variable
-  nodes = g_array_new(FALSE, FALSE, sizeof(char *));
+  initialize_global_variable();
 
   // get the local ip address
   GArray *local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
@@ -87,8 +97,6 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 
   g_array_free(local_ip_addresses, TRUE);
 
-  // initialize global lock_var_list
-  lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
   printf("Lock manager initialized, nodes information lists below:\n");
   for(int i = 0; i < local_ip_addresses->len; ++i)
     printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
@@ -138,12 +146,15 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 
 bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
 {
+  initialize_global_variable();
+
   printf("Getting request for lock number %d, seqno is %d.\n", pack->lock_number, pack->seqno);
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);
 
   if(lockvar->requesting_cs &&
-    (pack->seqno > lockvar->myseqno || (pack->seqno == lockvar->myseqno && compare_ip(pack->nodeip, local_ip))))
+    (pack->seqno > lockvar->myseqno ||
+    (pack->seqno == lockvar->myseqno && local_ip != NULL && compare_ip(pack->nodeip, local_ip))))
   {
     pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(mutex, NULL);
