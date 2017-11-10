@@ -142,6 +142,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
     void *result = NULL;
     printf("Send request to %s\n", g_array_index(nodes, char *, i));
     request_1(pack, &result, client);
+    clnt_destroy(client);
   }
   printf("Lock %d Acquired.\n", *number);
   return true;
