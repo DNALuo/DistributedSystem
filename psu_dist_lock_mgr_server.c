@@ -61,24 +61,17 @@ LockVar *find_lockvar(int lock_number, bool create)
 
 void initialize_global_variable()
 {
-  static bool has_var_initialized = false;
-  if(!has_var_initialized)
-  {
-    nodes = g_array_new(FALSE, FALSE, sizeof(char *));
-    lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
-    mac = get_mac_address();
-    pthread_mutex_init(&lockvar_list_lock, NULL);
-    assert(mac != 0);
-    assert(nodes != NULL);
-    assert(lockvar_list != NULL);
-    has_var_initialized = true;
-  }
+  nodes = g_array_new(FALSE, FALSE, sizeof(char *));
+  lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
+  mac = get_mac_address();
+  pthread_mutex_init(&lockvar_list_lock, NULL);
+  assert(mac != 0);
+  assert(nodes != NULL);
+  assert(lockvar_list != NULL);
 }
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 {
-  initialize_global_variable();
-
   // get the local ip address
   GArray *local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
   get_local_ip_addresses(local_ip_addresses);
@@ -152,6 +145,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 {
   // busy waiting for the initialization to finish
   WAIT_FOR_TRUE(has_initialized);
+
   printf("Releasing Lock %d.\n", *number);
 
   LockVar * lockvar = find_lockvar(*number, false);
@@ -171,8 +165,6 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 // this function may be called before the initialization from other servers
 bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
 {
-  initialize_global_variable();
-
   printf("Getting request for lock number %d, seqno is %d.\n", pack->lock_number, pack->seqno);
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
   lockvar->highestseqno = MAX(pack->seqno, lockvar->highestseqno);

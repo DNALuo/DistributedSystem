@@ -9,6 +9,7 @@
 #endif
 
 const char *procedures[] = {"NULLPROC", "INIT_LOCK_MGR", "ACQUIRE_LOCK", "RELEASE_LOCK", "REQUEST"};
+extern void initialize_global_variable();
 
 static void *psu_dist_lock_mgr_1_run(void *data)
 {
@@ -132,6 +133,8 @@ int main (int argc, char **argv)
 		exit(1);
 	}
   printf("Server up and running...\n");
+  // initialize the global variables
+  initialize_global_variable();
 	svc_run ();
 	fprintf (stderr, "%s", "svc_run returned");
 	exit (1);
