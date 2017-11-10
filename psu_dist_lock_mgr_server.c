@@ -72,7 +72,7 @@ void initialize_global_variable()
   assert(lockvar_list != NULL);
 }
 
-bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
+bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
 {
   // get the local ip address
   GArray *local_ip_addresses = g_array_new(FALSE, FALSE, sizeof(char *));
@@ -122,7 +122,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
   return true;
 }
 
-bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
+bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
 {
   // busy waiting for the initialization to finish
   WAIT_FOR_TRUE(has_initialized);
@@ -152,7 +152,7 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
   return true;
 }
 
-bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
+bool_t release_lock_1_svc(int* number, void *res, struct svc_req *req)
 {
   // busy waiting for the initialization to finish
   WAIT_FOR_TRUE(has_initialized);
@@ -177,7 +177,7 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 }
 
 // this function may be called before the initialization from other servers
-bool_t request_1_svc(RequestPack *pack, void *result, struct svc_req *req)
+bool_t request_1_svc(RequestPack *pack, void *res, struct svc_req *req)
 {
   printf("Getting request for lock number %d, seqno is %d.\n", pack->lock_number, pack->seqno);
   LockVar *lockvar = find_lockvar(pack->lock_number, true);
