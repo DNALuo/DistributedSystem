@@ -4,7 +4,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <string.h>
 #include <glib.h>
 #include "utility.h"
 
@@ -12,20 +11,16 @@ void get_local_ip_addresses(GArray *buf)
 {
   struct ifaddrs *addrs = (struct ifaddrs *)malloc(sizeof(struct ifaddrs));
   getifaddrs(&addrs);
-  struct ifaddrs *tmp = addrs;
 
-  while (tmp != NULL)
+  for(struct ifaddrs *tmp = addrs; tmp != NULL; tmp = tmp->ifa_next)
   {
     if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET)
     {
       struct sockaddr_in *p_addr = (struct sockaddr_in *)tmp->ifa_addr;
       char *ip_address = (char *)malloc(sizeof(char) * 17);
+      inet_ntop(AF_INET, &(p_addr->sin_addr), ip_address, INET_ADDRSTRLEN);
       g_array_append_val(buf, ip_address);
-      char *ip = inet_ntoa(p_addr->sin_addr);
-      strncpy(ip_address, ip, strlen(ip));
     }
-
-    tmp = tmp->ifa_next;
   }
   freeifaddrs(addrs);
 }
