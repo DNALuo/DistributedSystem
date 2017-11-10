@@ -80,7 +80,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	if (!psu_dist_lock_mgr_1_freeresult (transp, _xdr_result, (caddr_t) &result))
 		fprintf (stderr, "%s", "unable to free results");
 
-  printf("Procedure %s finishes with thread %p\n", procedures[rqstp->rq_proc], (void *)pthread_self());
+  printf("\033[33;1mProcedure %s finishes.\033[0m\n", procedures[rqstp->rq_proc]);
 	return NULL;
 }
 
@@ -96,14 +96,14 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   {
     struct svc_req *rqstp;
     SVCXPRT *transp;
-  } *data_ptr=(struct thread_data*)malloc(sizeof(struct thread_data));
+  } *data_ptr=(struct thread_data *)malloc(sizeof(struct thread_data));
   data_ptr-> rqstp = rqstp;
   data_ptr-> transp = transp;
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
   pthread_create(thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
   pthread_detach(*thread);
 
-  printf("Procedure calls %s, scheduled in thread %p\n", procedures[rqstp->rq_proc], thread);
+  printf("\033[32;1mProcedure calls %s\033[0m\n", procedures[rqstp->rq_proc]);
 }
 
 int main (int argc, char **argv)
