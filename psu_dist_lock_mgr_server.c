@@ -80,9 +80,13 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *result, struct svc_req *req)
 
   assert(local_ip_addresses->len != 0);
 
+  // copy the node_str since strtok will modify the string
+  char *node_str_copy = (char *)malloc(sizeof(char) * (strlen(*node_str) + 1));
+  strncpy(node_str_copy, *node_str, strlen(*node_str) + 1);
+
   int node_index = 0;
   bool has_found;
-  for(char *pch = strtok(*node_str,","); pch != NULL; pch = strtok(NULL, ","))
+  for(char *pch = strtok(node_str_copy,","); pch != NULL; pch = strtok(NULL, ","))
   {
     // ignore the local ip address
     has_found = false;
