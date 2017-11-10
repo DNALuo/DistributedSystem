@@ -29,6 +29,11 @@ void psu_init_lock_mgr(char** nodes, int num_nodes)
       strcat(node_str, ",");
   }
   CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
+  if(client == NULL)
+  {
+    clnt_pcreateerror("127.0.0.1");
+    exit(1);
+  }
   clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&RETRY_TIMEOUT);
 
   printf("Calling init_lock_mgr with %s.\n", node_str);
@@ -47,6 +52,11 @@ void psu_acquire_lock(int lock_number)
     return;
   }
   CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
+  if(client == NULL)
+  {
+    clnt_pcreateerror("127.0.0.1");
+    exit(1);
+  }
   clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&RETRY_TIMEOUT);
 
   printf("Calling acquire_lock with number %d.\n", lock_number);
@@ -64,6 +74,11 @@ void psu_release_lock(int lock_number)
     return;
   }
   CLIENT *client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
+  if(client == NULL)
+  {
+    clnt_pcreateerror("127.0.0.1");
+    exit(1);
+  }
   clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&RETRY_TIMEOUT);
 
   printf("Calling release_lock with number %d.\n", lock_number);

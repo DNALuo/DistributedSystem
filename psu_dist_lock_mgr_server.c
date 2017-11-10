@@ -139,6 +139,11 @@ bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
   for(int i = 0; i < nodes->len; ++i)
   {
     CLIENT *client = clnt_create(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
+    if(client == NULL)
+    {
+      clnt_pcreateerror("127.0.0.1");
+      exit(1);
+    }
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
     pack->lock_number = *number;
     pack->mac = mac;
