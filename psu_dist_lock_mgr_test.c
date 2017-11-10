@@ -1,25 +1,23 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include "psu_dist_lock_mgr.h"
 
-pthread_t thread1;
-pthread_t thread2;
+struct param {
+  int thread_id;
+  int lock_num;
+};
 
-void *thread1_func(void *param)
+void *thread_func(void *p)
 {
-  psu_acquire_lock(1);
-  printf("[Thread1]Doing Task.\n");
+  struct param *args = (struct param *)p;
+  psu_acquire_lock(args->lock_num);
+  printf("[Thread%d-Lock%d]Doing Task.\n", args->thread_id, args->lock_num);
   sleep(5);
-  psu_release_lock(1);
-}
-
-void *thread2_func(void *param)
-{
-  psu_acquire_lock(2);
-  printf("[Thread2]Doing Task.\n");
-  sleep(5);
-  psu_release_lock(2);
+  psu_release_lock(args->lock_num);
+  free(args);
+  return NULL;
 }
 
 int main(int argc, char **argv)
@@ -27,10 +25,23 @@ int main(int argc, char **argv)
   char **nodes = &argv[1];
   psu_init_lock_mgr(nodes, argc - 1);
 
-  printf("Spawn 2 thread.\n");
-  pthread_create(&thread1, NULL, thread1_func, NULL);
-  pthread_create(&thread2, NULL, thread2_func, NULL);
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
+  printf("Spawn 3 threads.\n");
+
+  pthread_t *threads[3];
+
+  int lock_num[] = {1, 1, 2};
+  for(int i = 0; i < 3; ++i)
+  {
+    pthread_t *thread = (pthread_t *)malloc(sizeof(pthread_t));
+    struct param *p = (struct param *)malloc(sizeof(struct param));
+    p->lock_num = lock_num[i];
+    p->thread_id = i;
+    pthread_create(thread, NULL, thread_func, (void *)p);
+    threads[i] = thread;
+  }
+
+  for(int i = 0; i < 3; ++i)
+    pthread_join(*threads[i], NULL);
+
   printf("Exit tests.\n");
 }
