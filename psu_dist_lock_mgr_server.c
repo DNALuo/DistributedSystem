@@ -14,6 +14,7 @@ static bool has_initialized = false;
 
 // ricart & agrawala algorithm variables
 typedef struct _LockVar {
+  pthread_mutex_t lock; // for local threads acquiring the same lock
   int lock_number;
   int myseqno;
   int highestseqno;
@@ -53,6 +54,7 @@ LockVar *find_lockvar(int lock_number, bool create)
     lockvar->myseqno = 0;
     lockvar->requesting_cs = false;
     lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
+    pthread_mutex_init(&(lockvar->lock), NULL);
     g_array_append_val(lockvar_list, lockvar);
   }
   pthread_mutex_unlock(&lockvar_list_lock);
@@ -124,6 +126,10 @@ bool_t acquire_lock_1_svc(int* number, void *result, struct svc_req *req)
   printf("Acquiring lock number %d.\n", *number);
 
   LockVar *lockvar = find_lockvar(*number, true);
+
+  // lock the lockvar for local 2 threads acquiring the same lock
+  pthread_mutex_lock(&(lockvar->lock));
+
   lockvar->requesting_cs = true;
   lockvar->myseqno = lockvar->highestseqno + 1;
   for(int i = 0; i < nodes->len; ++i)
@@ -158,6 +164,9 @@ bool_t release_lock_1_svc(int* number, void *result, struct svc_req *req)
 
   g_array_free(lockvar->deffered, TRUE);
   lockvar->deffered = g_array_new(FALSE, FALSE, sizeof(pthread_mutex_t *));
+
+  pthread_mutex_unlock(&(lockvar->lock));
+  
   printf("Lock %d Released.\n", *number);
   return true;
 }
