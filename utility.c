@@ -9,10 +9,10 @@
 #include <pthread.h>
 #include "utility.h"
 
-static pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
-
+// multi-thread safe version of clnt_create with timeout set to 1hr
 CLIENT *create_client(char *host, unsigned int prog, unsigned int vers, char *protocol)
 {
+  static pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&client_mutex);
   CLIENT *client = clnt_create(host, prog, vers, protocol);
 
