@@ -62,6 +62,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 		break;
 
 	default:
+    printf("No procedure Found!\n");
 		svcerr_noproc (transp);
 		return NULL;
 	}
