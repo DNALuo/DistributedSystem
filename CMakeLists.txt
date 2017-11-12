@@ -20,7 +20,8 @@ foreach(TASK psu_dist_lock_mgr)
             ${TASK}_msg.h
             ${TASK}_msg_clnt.c
             ${TASK}_msg_xdr.c
-            ${TASK}.c)
+            ${TASK}.c
+            utility.c)
 
     add_executable(${TASK}_server ${TASK}_server.c
             ${TASK}_msg.h
