@@ -3,10 +3,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utility.h"
 #include "psu_dist_lock_mgr_msg.h"
 
 static bool has_initialized = false;
-CLIENT *client = NULL;
 
 void psu_init_lock_mgr(char** nodes, int num_nodes)
 {
@@ -27,20 +27,14 @@ void psu_init_lock_mgr(char** nodes, int num_nodes)
     if(i != num_nodes - 1)
       strcat(node_str, ",");
   }
-  client = clnt_create("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
-  if(client == NULL)
-  {
-    clnt_pcreateerror("127.0.0.1");
-    exit(1);
-  }
-  struct timeval RETRY_TIMEOUT = { 60 * 60 * 24, 0 };
-  clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&RETRY_TIMEOUT);
+  CLIENT *client = create_client("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
 
   printf("Calling init_lock_mgr with %s.\n", node_str);
   void *result = NULL;
   init_lock_mgr_1(&node_str, &result, client);
 
   has_initialized = true;
+  clnt_destroy(client);
   printf("Call init_lock_mgr finished.\n");
 }
 
@@ -53,8 +47,10 @@ void psu_acquire_lock(int lock_number)
   }
 
   printf("Calling acquire_lock with number %d.\n", lock_number);
+  CLIENT *client = create_client("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
   void *result = NULL;
   acquire_lock_1(&lock_number, &result, client);
+  clnt_destroy(client);
   printf("Lock %d Acquired.\n", lock_number);
 }
 
@@ -67,7 +63,9 @@ void psu_release_lock(int lock_number)
   }
 
   printf("Calling release_lock with number %d.\n", lock_number);
+  CLIENT* client = create_client("127.0.0.1", PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
   void *result = NULL;
   release_lock_1(&lock_number, &result, client);
+  clnt_destroy(client);
   printf("Lock %d Released.\n", lock_number);
 }
