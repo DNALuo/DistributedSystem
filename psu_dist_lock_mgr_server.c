@@ -36,12 +36,6 @@ void initialize_global_variable()
   assert(lockvar_list != NULL);
 }
 
-#define WAIT_FOR_TRUE(cond) \
-{ \
-  while(!(cond)) \
-    usleep(50000); \
-}
-
 LockVar *find_lockvar(int lock_number, bool create)
 {
   // search in the list to find the lock variables
@@ -121,9 +115,6 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
 
 bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
 {
-  // busy waiting for the initialization to finish
-  WAIT_FOR_TRUE(has_initialized);
-
   printf("Acquiring lock number %d.\n", *number);
 
   LockVar *lockvar = find_lockvar(*number, true);
@@ -151,9 +142,6 @@ bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
 
 bool_t release_lock_1_svc(int* number, void *res, struct svc_req *req)
 {
-  // busy waiting for the initialization to finish
-  WAIT_FOR_TRUE(has_initialized);
-
   printf("Releasing Lock %d.\n", *number);
 
   LockVar * lockvar = find_lockvar(*number, false);
