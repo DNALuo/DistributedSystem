@@ -15,6 +15,7 @@ void *thread_func(void *p)
   psu_acquire_lock(args->lock_num);
   printf("[Thread%d-Lock%d]Doing Task.\n", args->thread_id, args->lock_num);
   sleep(5);
+  printf("[Thread%d-Lock%d]Task Finished.\n", args->thread_id, args->lock_num);
   psu_release_lock(args->lock_num);
   free(args);
   return NULL;
