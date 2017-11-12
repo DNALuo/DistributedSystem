@@ -98,8 +98,12 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
     struct svc_req *rqstp;
     SVCXPRT *transp;
   } *data_ptr=(struct thread_data *)malloc(sizeof(struct thread_data));
-  data_ptr-> rqstp = rqstp;
-  data_ptr-> transp = transp;
+
+  // deep copy the rqstp and transp pointers
+  struct svc_req *rqstp_copy = (struct svc_req *)malloc(sizeof(struct svc_req));
+  memcpy(rqstp_copy, rqstp, sizeof(struct svc_req));
+  data_ptr->rqstp = rqstp_copy;
+  data_ptr->transp = transp;
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
   pthread_create(thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
   pthread_detach(*thread);
