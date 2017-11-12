@@ -100,16 +100,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
     if(has_found)
       continue;
 
-    CLIENT *client = clnt_create(pch, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
-
-    if(client == NULL)
-    {
-      clnt_pcreateerror(pch);
-      exit(1);
-    }
-    struct timeval RETRY_TIMEOUT = { 60 * 60 * 24, 0 };
-    clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&RETRY_TIMEOUT);
-
+    CLIENT *client = create_client(pch, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
     g_array_append_val(clients, client);
   }
 
