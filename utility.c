@@ -6,12 +6,16 @@
 #include <arpa/inet.h>
 #include <glib.h>
 #include <string.h>
+#include <pthread.h>
 #include "utility.h"
+
+static pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 CLIENT *create_client(char *host, unsigned int prog, unsigned int vers, char *protocol)
 {
-
+  pthread_mutex_lock(&client_mutex);
   CLIENT *client = clnt_create(host, prog, vers, protocol);
+
   struct timeval TIMEOUT = { 60 * 60, 0 };
   if(client == NULL)
   {
@@ -22,7 +26,7 @@ CLIENT *create_client(char *host, unsigned int prog, unsigned int vers, char *pr
     clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&TIMEOUT);
 
   clnt_control(client, CLSET_TIMEOUT, (char *)&TIMEOUT);
-
+  pthread_mutex_unlock(&client_mutex);
   return client;
 }
 
