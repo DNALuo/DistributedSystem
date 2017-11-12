@@ -5,7 +5,26 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <glib.h>
+#include <string.h>
 #include "utility.h"
+
+CLIENT *create_client(char *host, unsigned int prog, unsigned int vers, char *protocol)
+{
+
+  CLIENT *client = clnt_create(host, prog, vers, protocol);
+  struct timeval TIMEOUT = { 60 * 60 * 24, 0 };
+  if(client == NULL)
+  {
+    clnt_pcreateerror(host);
+    exit(1);
+  };
+  if(strcmp(protocol, "udp") == 0)
+    clnt_control(client, CLSET_RETRY_TIMEOUT, (char *)&TIMEOUT);
+
+  clnt_control(client, CLSET_TIMEOUT, (char *)&TIMEOUT);
+
+  return client;
+}
 
 void get_local_ip_addresses(GArray *buf)
 {
