@@ -12,7 +12,7 @@ CLIENT *create_client(char *host, unsigned int prog, unsigned int vers, char *pr
 {
 
   CLIENT *client = clnt_create(host, prog, vers, protocol);
-  struct timeval TIMEOUT = { 60 * 60 * 24, 0 };
+  struct timeval TIMEOUT = { 60 * 60, 0 };
   if(client == NULL)
   {
     clnt_pcreateerror(host);
