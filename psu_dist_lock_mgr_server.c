@@ -8,7 +8,7 @@
 #include "utility.h"
 #include "psu_dist_lock_mgr_msg.h"
 
-static GArray *clients = NULL;
+static GArray *nodes = NULL;
 static u_quad_t mac = 0;
 static bool has_initialized = false;
 
@@ -24,6 +24,17 @@ typedef struct _LockVar {
 
 GArray *lockvar_list = NULL;
 pthread_mutex_t lockvar_list_lock;
+
+void initialize_global_variable()
+{
+  nodes = g_array_new(FALSE, FALSE, sizeof(char *));
+  lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
+  mac = get_mac_address();
+  pthread_mutex_init(&lockvar_list_lock, NULL);
+  assert(mac != 0);
+  assert(nodes != NULL);
+  assert(lockvar_list != NULL);
+}
 
 #define WAIT_FOR_TRUE(cond) \
 { \
@@ -61,16 +72,6 @@ LockVar *find_lockvar(int lock_number, bool create)
   return lockvar;
 }
 
-void initialize_global_variable()
-{
-  clients = g_array_new(FALSE, FALSE, sizeof(CLIENT *));
-  lockvar_list = g_array_new(FALSE, FALSE, sizeof(LockVar *));
-  mac = get_mac_address();
-  pthread_mutex_init(&lockvar_list_lock, NULL);
-  assert(mac != 0);
-  assert(clients != NULL);
-  assert(lockvar_list != NULL);
-}
 
 bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
 {
@@ -100,8 +101,7 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
     if(has_found)
       continue;
 
-    CLIENT *client = create_client(pch, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "udp");
-    g_array_append_val(clients, client);
+    g_array_append_val(nodes, pch);
   }
 
   // remove the local ip addresses
@@ -110,11 +110,10 @@ bool_t init_lock_mgr_1_svc(char **node_str, void *res, struct svc_req *req)
 
   g_array_free(local_ip_addresses, TRUE);
 
-  /*
   printf("Lock manager initialized, nodes information lists below:\n");
   for(int i = 0; i < nodes->len; ++i)
     printf("node[%d] = %s\n", i, g_array_index(nodes, char *, i));
-  */
+
   has_initialized = true;
 
   return true;
@@ -134,15 +133,17 @@ bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
 
   lockvar->requesting_cs = true;
   lockvar->myseqno = lockvar->highestseqno + 1;
-  for(int i = 0; i < clients->len; ++i)
+  for(int i = 0; i < nodes->len; ++i)
   {
     RequestPack *pack = (RequestPack *)malloc(sizeof(RequestPack));
     pack->lock_number = *number;
     pack->mac = mac;
     pack->seqno = lockvar->myseqno;
     void *result = NULL;
-    printf("Send request\n");
-    request_1(pack, &result, g_array_index(clients, CLIENT *, i));
+    printf("Send request to %s\n", g_array_index(nodes, char *, i));
+    CLIENT *client = create_client(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
+    request_1(pack, &result, client);
+    clnt_destroy(client);
   }
   printf("Lock %d Acquired.\n", *number);
   return true;
