@@ -118,7 +118,7 @@ static void *run(void *data)
   if (!freeresult (transp, _xdr_result, (caddr_t) result))
     fprintf (stderr, "%s", "unable to free results");
 
-  printf("\033[33;1mProcedure %d finishes.\033[0m\n", rqstp->rq_prog);
+  printf("\033[33;1mProcedure %d finishes.\033[0m\n", rqstp->rq_proc);
   free(ptr_data->argument);
   free(ptr_data->result);
   free(ptr_data->rqstp);
