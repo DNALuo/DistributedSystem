@@ -15,7 +15,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR})
 
-foreach(TASK psu_dist_lock_mgr)
+foreach(TASK psu_dist_lock_mgr psu_thread)
     add_executable(${TASK}_test ${TASK}_test.c
             ${TASK}_msg.h
             ${TASK}_msg_clnt.c
