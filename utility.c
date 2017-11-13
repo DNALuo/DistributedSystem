@@ -126,7 +126,7 @@ static void *run(void *data)
   return NULL;
 }
 
-void dispatcher_mt(
+void dispatcher(
   struct svc_req *rqstp,
   SVCXPRT *transp,
   void (*parse_thread_data)(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data),

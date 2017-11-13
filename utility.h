@@ -24,7 +24,7 @@ struct thread_data
 (ptr)->_xdr_result = _xdr_result; \
 (ptr)->_xdr_argument = _xdr_argument;
 
-void dispatcher_mt(
+void dispatcher(
   struct svc_req *rqstp,
   SVCXPRT *transp,
   void (*parse_thread_data)(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data),
