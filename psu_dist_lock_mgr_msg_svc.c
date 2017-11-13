@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <rpc/pmap_clnt.h>
 #include <memory.h>
+#include <rpc/svc.h>
 
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
@@ -104,8 +105,11 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   // deep copy the rqstp and transp pointers
   struct svc_req *rqstp_copy = (struct svc_req *)malloc(sizeof(struct svc_req));
   memcpy(rqstp_copy, rqstp, sizeof(struct svc_req));
+  SVCXPRT *transp_copy = (SVCXPRT *)malloc(sizeof(SVCXPRT));
+  memcpy(transp_copy, transp, sizeof(SVCXPRT));
+
   data_ptr->rqstp = rqstp_copy;
-  data_ptr->transp = transp;
+  data_ptr->transp = transp_copy;
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
   pthread_create(thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
   pthread_detach(*thread);
