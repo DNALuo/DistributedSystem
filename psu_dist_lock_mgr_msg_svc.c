@@ -12,6 +12,7 @@ extern void initialize_global_variable();
 
 static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data)
 {
+  // allocate argument and result on the heap
   union argument_union{
     char *init_lock_mgr_1_arg;
     int acquire_lock_1_arg;
@@ -53,6 +54,8 @@ static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, s
       printf("No procedure Found!\n");
       svcerr_noproc (transp);
   }
+
+  // memset and call the argument by pointer
   memset ((char *)argument, 0, sizeof (*argument));
   if (!svc_getargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) argument)) {
     printf("Error getting arguments.\n");
