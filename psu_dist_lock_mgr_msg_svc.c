@@ -65,7 +65,7 @@ static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, s
 
 static void run(struct svc_req *rqstp, register SVCXPRT *transp)
 {
-  dispatcher_mt(rqstp, transp, procedures, parse_thread_data, &psu_dist_lock_mgr_1_freeresult);
+  dispatcher_mt(rqstp, transp, parse_thread_data, &psu_dist_lock_mgr_1_freeresult);
 }
 
 int main (int argc, char **argv)
