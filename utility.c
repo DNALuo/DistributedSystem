@@ -95,20 +95,36 @@ u_quad_t get_mac_address()
   return result;
 }
 
-static struct thread_wrapper_data {
-  void *(*run)(void *);
-  void *thread_data;
-  const char *procedure_name;
-};
+static const char **procedures;
 
-static void *run_wrapper(void *wrapper_data)
+static void *run(void *data)
 {
-  struct thread_wrapper_data *ptr = (struct thread_wrapper_data *)wrapper_data;
-  (*ptr->run)(ptr->thread_data);
-  printf("\033[33;1mProcedure %s finishes.\033[0m\n", ptr->procedure_name);
-  free(ptr);
-  free(((struct thread_data *)ptr->thread_data)->argument);
-  free(ptr->thread_data);
+  struct thread_data *ptr_data = (struct thread_data *)data;
+  struct svc_req *rqstp = ptr_data->rqstp;
+  SVCXPRT *transp = ptr_data->transp;
+  caddr_t argument = ptr_data->argument;
+  caddr_t result = ptr_data->result;
+  xdrproc_t _xdr_argument = ptr_data->_xdr_argument, _xdr_result = ptr_data->_xdr_result;
+  bool_t (*local)(char *, void *, struct svc_req *) = ptr_data->local;
+  int (*freeresult)(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result) = ptr_data->freeresult;
+  bool_t retval;
+
+  retval = (bool_t) (*local)((char *)argument, (void *)result, rqstp);
+  if (retval > 0 && !svc_sendreply(transp, (xdrproc_t) _xdr_result, (char *)&result)) {
+    svcerr_systemerr (transp);
+  }
+  if (!svc_freeargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) argument)) {
+    fprintf (stderr, "%s", "unable to free arguments");
+    exit (1);
+  }
+  if (!freeresult (transp, _xdr_result, (caddr_t) result))
+    fprintf (stderr, "%s", "unable to free results");
+
+  printf("\033[33;1mProcedure %s finishes.\033[0m\n", procedures[rqstp->rq_prog]);
+  free(ptr_data->argument);
+  free(ptr_data->result);
+  free(ptr_data);
+  return NULL;
 }
 
 void dispatcher_mt(
@@ -116,7 +132,7 @@ void dispatcher_mt(
   SVCXPRT *transp,
   const char **procedure_names,
   void (*parse_thread_data)(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data),
-  void *(*run)(void *))
+  int (*freeresult)(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result))
 {
   // if it's nullproc don't create a thread
   if(rqstp->rq_proc == NULLPROC)
@@ -126,16 +142,14 @@ void dispatcher_mt(
   }
 
   struct thread_data *data_ptr=(struct thread_data *)malloc(sizeof(struct thread_data));
+  procedures = procedure_names;
 
   parse_thread_data(rqstp, transp, data_ptr);
+  data_ptr->freeresult = freeresult;
 
   printf("\033[32;1mProcedure calls %s\033[0m\n", procedure_names[rqstp->rq_proc]);
 
-  struct thread_wrapper_data *wrapper = (struct thread_wrapper_data *)malloc(sizeof(struct thread_wrapper_data));
-  wrapper->thread_data = data_ptr;
-  wrapper->run = run;
-  wrapper->procedure_name = procedure_names[rqstp->rq_proc];
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
-  pthread_create(thread, NULL, &run_wrapper, (void *)data_ptr);
+  pthread_create(thread, NULL, &run, (void *)data_ptr);
   pthread_detach(*thread);
 }
