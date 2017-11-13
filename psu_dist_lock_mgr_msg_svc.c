@@ -72,34 +72,34 @@ static void run(struct svc_req *rqstp, register SVCXPRT *transp)
 
 int main (int argc, char **argv)
 {
-	register SVCXPRT *transp;
+  register SVCXPRT *transp;
 
-	pmap_unset (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1);
+  pmap_unset (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1);
 
-	transp = svcudp_create(RPC_ANYSOCK);
-	if (transp == NULL) {
-		fprintf (stderr, "%s", "cannot create udp service.");
-		exit(1);
-	}
-	if (!svc_register(transp, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, run, IPPROTO_UDP)) {
-		fprintf (stderr, "%s", "unable to register (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, udp).");
-		exit(1);
-	}
+  transp = svcudp_create(RPC_ANYSOCK);
+  if (transp == NULL) {
+    fprintf (stderr, "%s", "cannot create udp service.");
+    exit(1);
+  }
+  if (!svc_register(transp, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, run, IPPROTO_UDP)) {
+    fprintf (stderr, "%s", "unable to register (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, udp).");
+    exit(1);
+  }
 
-	transp = svctcp_create(RPC_ANYSOCK, 0, 0);
-	if (transp == NULL) {
-		fprintf (stderr, "%s", "cannot create tcp service.");
-		exit(1);
-	}
-	if (!svc_register(transp, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, run, IPPROTO_TCP)) {
-		fprintf (stderr, "%s", "unable to register (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, tcp).");
-		exit(1);
-	}
+  transp = svctcp_create(RPC_ANYSOCK, 0, 0);
+  if (transp == NULL) {
+    fprintf (stderr, "%s", "cannot create tcp service.");
+    exit(1);
+  }
+  if (!svc_register(transp, PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, run, IPPROTO_TCP)) {
+    fprintf (stderr, "%s", "unable to register (PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, tcp).");
+    exit(1);
+  }
   printf("Server up and running...\n");
   // initialize the global variables
   initialize_global_variable();
-	svc_run ();
-	fprintf (stderr, "%s", "svc_run returned");
-	exit (1);
-	/* NOTREACHED */
+  svc_run ();
+  fprintf (stderr, "%s", "svc_run returned");
+  exit (1);
+  /* NOTREACHED */
 }
