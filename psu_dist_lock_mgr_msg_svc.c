@@ -68,6 +68,7 @@ static void *psu_dist_lock_mgr_1_run(void *data)
 	}
 	memset ((char *)&argument, 0, sizeof (argument));
 	if (!svc_getargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) &argument)) {
+    printf("Error getting arguments.\n");
 		svcerr_decode (transp);
 		return NULL;
 	}
