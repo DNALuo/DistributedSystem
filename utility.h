@@ -29,6 +29,5 @@ struct thread_data
 void dispatcher_mt(
   struct svc_req *rqstp,
   SVCXPRT *transp,
-  const char **procedure_names,
   void (*parse_thread_data)(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data),
   int (*freeresult)(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result));

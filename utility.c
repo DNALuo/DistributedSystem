@@ -120,7 +120,7 @@ static void *run(void *data)
   if (!freeresult (transp, _xdr_result, (caddr_t) result))
     fprintf (stderr, "%s", "unable to free results");
 
-  printf("\033[33;1mProcedure %s finishes.\033[0m\n", procedures[rqstp->rq_prog]);
+  printf("\033[33;1mProcedure %d finishes.\033[0m\n", rqstp->rq_prog);
   free(ptr_data->argument);
   free(ptr_data->result);
   free(ptr_data);
@@ -130,7 +130,6 @@ static void *run(void *data)
 void dispatcher_mt(
   struct svc_req *rqstp,
   SVCXPRT *transp,
-  const char **procedure_names,
   void (*parse_thread_data)(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data),
   int (*freeresult)(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result))
 {
@@ -142,12 +141,11 @@ void dispatcher_mt(
   }
 
   struct thread_data *data_ptr=(struct thread_data *)malloc(sizeof(struct thread_data));
-  procedures = procedure_names;
 
   parse_thread_data(rqstp, transp, data_ptr);
   data_ptr->freeresult = freeresult;
 
-  printf("\033[32;1mProcedure calls %s\033[0m\n", procedure_names[rqstp->rq_proc]);
+  printf("\033[32;1mProcedure calls %d\033[0m\n", rqstp->rq_proc);
 
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
   pthread_create(thread, NULL, &run, (void *)data_ptr);
