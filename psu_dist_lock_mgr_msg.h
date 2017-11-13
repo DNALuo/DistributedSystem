@@ -9,9 +9,9 @@ extern "C" {
 
 
 struct RequestPack {
-	int lock_number;
-	int seqno;
-	u_quad_t mac;
+  int lock_number;
+  int seqno;
+  u_quad_t mac;
 };
 typedef struct RequestPack RequestPack;
 
