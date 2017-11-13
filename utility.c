@@ -95,8 +95,6 @@ u_quad_t get_mac_address()
   return result;
 }
 
-static const char **procedures;
-
 static void *run(void *data)
 {
   struct thread_data *ptr_data = (struct thread_data *)data;

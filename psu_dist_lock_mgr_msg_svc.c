@@ -8,7 +8,6 @@
 #define SIG_PF void(*)(int)
 #endif
 
-static const char *procedures[] = {"NULLPROC", "INIT_LOCK_MGR", "ACQUIRE_LOCK", "RELEASE_LOCK", "REQUEST"};
 extern void initialize_global_variable();
 
 static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *thread_data)
