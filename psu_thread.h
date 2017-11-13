@@ -2,10 +2,10 @@
 
 // This is the structure used to store the thread information.
 // It can contain details about the stack, current context of execution, shared memory locations etc.
-typedef struct psu_thread_info psu_thread_info_t
+typedef struct psu_thread_info_t
 {
 
-};
+} psu_thread_info_t;
 
 // Like pthread_create() function, this interface creates and starts execution of a new thread on current machine,
 // returns 0 if successful.
