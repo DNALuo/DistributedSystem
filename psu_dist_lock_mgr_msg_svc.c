@@ -108,13 +108,13 @@ static void psu_dist_lock_mgr_1(struct svc_req *rqstp, register SVCXPRT *transp)
   SVCXPRT *transp_copy = (SVCXPRT *)malloc(sizeof(SVCXPRT));
   memcpy(transp_copy, transp, sizeof(SVCXPRT));
 
+  printf("\033[32;1mProcedure calls %s\033[0m\n", procedures[rqstp->rq_proc]);
+
   data_ptr->rqstp = rqstp_copy;
   data_ptr->transp = transp_copy;
   pthread_t *thread= (pthread_t *)malloc(sizeof(pthread_t));
   pthread_create(thread, NULL, psu_dist_lock_mgr_1_run, (void *)data_ptr);
   pthread_detach(*thread);
-
-  printf("\033[32;1mProcedure calls %s\033[0m\n", procedures[rqstp->rq_proc]);
 }
 
 int main (int argc, char **argv)
