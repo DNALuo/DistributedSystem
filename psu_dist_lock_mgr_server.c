@@ -134,6 +134,7 @@ bool_t acquire_lock_1_svc(int* number, void *res, struct svc_req *req)
     printf("Send request to %s\n", g_array_index(nodes, char *, i));
     CLIENT *client = create_client(g_array_index(nodes, char *, i), PSU_DIST_LOCK_MGR, PSU_DIST_LOCK_MGR_V1, "tcp");
     request_1(pack, &result, client);
+    printf("Got reply from %s\n", g_array_index(nodes, char *, i));
     clnt_destroy(client);
   }
   printf("Lock %d Acquired.\n", *number);
