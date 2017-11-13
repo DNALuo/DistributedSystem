@@ -1,12 +1,12 @@
 struct Context
 {
-  unsiged int uc_mcsize;
+  unsigned int uc_mcsize;
   int uc_onstack;
   int us_sigmask;
   opaque uc_mcontext<>;
 
   int ss_flag;
-  unsiged int ss_size;
+  unsigned int ss_size;
   opaque ss_sp<>;
 };
 
