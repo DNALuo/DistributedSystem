@@ -121,6 +121,7 @@ static void *run(void *data)
   printf("\033[33;1mProcedure %d finishes.\033[0m\n", rqstp->rq_prog);
   free(ptr_data->argument);
   free(ptr_data->result);
+  free(ptr_data->rqstp);
   free(ptr_data);
   return NULL;
 }
@@ -140,8 +141,14 @@ void dispatcher_mt(
 
   struct thread_data *data_ptr=(struct thread_data *)malloc(sizeof(struct thread_data));
 
-  parse_thread_data(rqstp, transp, data_ptr);
+  // do copy the rqstp object since it may change after the thread is invoked
+  data_ptr->transp = transp;
+  data_ptr->rqstp = (struct svc_req *)malloc(sizeof(struct svc_req));
+  memcpy(data_ptr->rqstp, rqstp, sizeof(struct svc_req));
   data_ptr->freeresult = freeresult;
+
+  // parse the argument and result
+  parse_thread_data(rqstp, transp, data_ptr);
 
   printf("\033[32;1mProcedure calls %d\033[0m\n", rqstp->rq_proc);
 

@@ -19,8 +19,6 @@ struct thread_data
 
 #define PACK_THREAD_DATA(ptr) \
 (ptr)->local = local; \
-(ptr)->rqstp = rqstp; \
-(ptr)->transp = transp; \
 (ptr)->argument = (caddr_t) argument; \
 (ptr)->result = (caddr_t) result; \
 (ptr)->_xdr_result = _xdr_result; \
