@@ -101,12 +101,14 @@ static struct thread_wrapper_data {
   const char *procedure_name;
 };
 
-void *run_wrapper(void *wrapper_data)
+static void *run_wrapper(void *wrapper_data)
 {
   struct thread_wrapper_data *ptr = (struct thread_wrapper_data *)wrapper_data;
   (*ptr->run)(ptr->thread_data);
   printf("\033[33;1mProcedure %s finishes.\033[0m\n", ptr->procedure_name);
   free(ptr);
+  free(((struct thread_data *)ptr->thread_data)->argument);
+  free(ptr->thread_data);
 }
 
 void dispatcher_mt(
