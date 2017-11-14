@@ -38,9 +38,9 @@ int psu_thread_migrate(char* node)
   memcpy(&(cont->uc_mcontext.fpregs), context.uc_mcontext.fpregs, sizeof(rpc_libc_fpstate));
   memcpy(cont->uc_mcontext.gregs, context.uc_mcontext.gregs, sizeof(rpc_gregset_t));
 
-  memcpy(cont->uc_sigmask, context.uc_sigmask, sizeof(rpc__sigset_t));
+  memcpy(&cont->uc_sigmask, &context.uc_sigmask, sizeof(rpc__sigset_t));
 
-  memcpy(cont->__fpregs_mem, context.__fpregs_mem, sizeof(rpc_libc_fpstate));
+  memcpy(&cont->__fpregs_mem, &context.__fpregs_mem, sizeof(rpc_libc_fpstate));
 
   void *result = NULL;
   migrate_1(cont, &result, client);
