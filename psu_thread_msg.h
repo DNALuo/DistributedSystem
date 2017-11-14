@@ -1,4 +1,5 @@
 #pragma once
+
 #include <rpc/rpc.h>
 
 #include <pthread.h>
@@ -21,22 +22,22 @@ struct rpc_libc_fpxreg {
 typedef struct rpc_libc_fpxreg rpc_libc_fpxreg;
 
 struct rpc_libc_xmmreg {
-  u_int32_t element[4];
+  u_int element[4];
 };
 typedef struct rpc_libc_xmmreg rpc_libc_xmmreg;
 
 struct rpc_libc_fpstate {
-  u_int16_t cwd;
-  u_int16_t swd;
-  u_int16_t ftw;
-  u_int16_t fop;
-  u_int64_t rip;
-  u_int64_t rdp;
-  u_int32_t mxcsr;
-  u_int32_t mxcr_mask;
+  u_char cwd;
+  u_char swd;
+  u_char ftw;
+  u_char fop;
+  u_quad_t rip;
+  u_quad_t rdp;
+  u_int mxcsr;
+  u_int mxcr_mask;
   struct rpc_libc_fpxreg _st[8];
   struct rpc_libc_xmmreg _xmm[16];
-  u_int32_t padding[24];
+  u_int padding[24];
 };
 typedef struct rpc_libc_fpstate rpc_libc_fpstate;
 

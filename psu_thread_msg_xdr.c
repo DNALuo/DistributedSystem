@@ -134,8 +134,45 @@ bool_t xdr_rpc_libc_xmmreg (XDR *xdrs, rpc_libc_xmmreg *objp)
   register int32_t *buf;
 
   int i;
+
+  if (xdrs->x_op == XDR_ENCODE) {
+    buf = XDR_INLINE (xdrs, ( 4 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->element, 4,
+                       sizeof (u_int), (xdrproc_t) xdr_u_int))
+        return FALSE;
+    } else {
+      {
+        register u_int *genp;
+
+        for (i = 0, genp = objp->element;
+             i < 4; ++i) {
+          IXDR_PUT_U_LONG(buf, *genp++);
+        }
+      }
+    }
+    return TRUE;
+  } else if (xdrs->x_op == XDR_DECODE) {
+    buf = XDR_INLINE (xdrs, ( 4 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->element, 4,
+                       sizeof (u_int), (xdrproc_t) xdr_u_int))
+        return FALSE;
+    } else {
+      {
+        register u_int *genp;
+
+        for (i = 0, genp = objp->element;
+             i < 4; ++i) {
+          *genp++ = IXDR_GET_U_LONG(buf);
+        }
+      }
+    }
+    return TRUE;
+  }
+
   if (!xdr_vector (xdrs, (char *)objp->element, 4,
-                   sizeof (u_int32_t), (xdrproc_t) xdr_u_int32_t))
+                   sizeof (u_int), (xdrproc_t) xdr_u_int))
     return FALSE;
   return TRUE;
 }
@@ -145,21 +182,102 @@ bool_t xdr_rpc_libc_fpstate (XDR *xdrs, rpc_libc_fpstate *objp)
   register int32_t *buf;
 
   int i;
-  if (!xdr_u_int16_t (xdrs, &objp->cwd))
+
+  if (xdrs->x_op == XDR_ENCODE) {
+    if (!xdr_u_char (xdrs, &objp->cwd))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->swd))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->ftw))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->fop))
+      return FALSE;
+    if (!xdr_u_quad_t (xdrs, &objp->rip))
+      return FALSE;
+    if (!xdr_u_quad_t (xdrs, &objp->rdp))
+      return FALSE;
+    if (!xdr_u_int (xdrs, &objp->mxcsr))
+      return FALSE;
+    if (!xdr_u_int (xdrs, &objp->mxcr_mask))
+      return FALSE;
+    if (!xdr_vector (xdrs, (char *)objp->_st, 8,
+                     sizeof (rpc_libc_fpxreg), (xdrproc_t) xdr_rpc_libc_fpxreg))
+      return FALSE;
+    if (!xdr_vector (xdrs, (char *)objp->_xmm, 16,
+                     sizeof (rpc_libc_xmmreg), (xdrproc_t) xdr_rpc_libc_xmmreg))
+      return FALSE;
+    buf = XDR_INLINE (xdrs, ( 24 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->padding, 24,
+                       sizeof (u_int), (xdrproc_t) xdr_u_int))
+        return FALSE;
+    } else {
+      {
+        register u_int *genp;
+
+        for (i = 0, genp = objp->padding;
+             i < 24; ++i) {
+          IXDR_PUT_U_LONG(buf, *genp++);
+        }
+      }
+    }
+    return TRUE;
+  } else if (xdrs->x_op == XDR_DECODE) {
+    if (!xdr_u_char (xdrs, &objp->cwd))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->swd))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->ftw))
+      return FALSE;
+    if (!xdr_u_char (xdrs, &objp->fop))
+      return FALSE;
+    if (!xdr_u_quad_t (xdrs, &objp->rip))
+      return FALSE;
+    if (!xdr_u_quad_t (xdrs, &objp->rdp))
+      return FALSE;
+    if (!xdr_u_int (xdrs, &objp->mxcsr))
+      return FALSE;
+    if (!xdr_u_int (xdrs, &objp->mxcr_mask))
+      return FALSE;
+    if (!xdr_vector (xdrs, (char *)objp->_st, 8,
+                     sizeof (rpc_libc_fpxreg), (xdrproc_t) xdr_rpc_libc_fpxreg))
+      return FALSE;
+    if (!xdr_vector (xdrs, (char *)objp->_xmm, 16,
+                     sizeof (rpc_libc_xmmreg), (xdrproc_t) xdr_rpc_libc_xmmreg))
+      return FALSE;
+    buf = XDR_INLINE (xdrs, ( 24 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->padding, 24,
+                       sizeof (u_int), (xdrproc_t) xdr_u_int))
+        return FALSE;
+    } else {
+      {
+        register u_int *genp;
+
+        for (i = 0, genp = objp->padding;
+             i < 24; ++i) {
+          *genp++ = IXDR_GET_U_LONG(buf);
+        }
+      }
+    }
+    return TRUE;
+  }
+
+  if (!xdr_u_char (xdrs, &objp->cwd))
     return FALSE;
-  if (!xdr_u_int16_t (xdrs, &objp->swd))
+  if (!xdr_u_char (xdrs, &objp->swd))
     return FALSE;
-  if (!xdr_u_int16_t (xdrs, &objp->ftw))
+  if (!xdr_u_char (xdrs, &objp->ftw))
     return FALSE;
-  if (!xdr_u_int16_t (xdrs, &objp->fop))
+  if (!xdr_u_char (xdrs, &objp->fop))
     return FALSE;
-  if (!xdr_u_int64_t (xdrs, &objp->rip))
+  if (!xdr_u_quad_t (xdrs, &objp->rip))
     return FALSE;
-  if (!xdr_u_int64_t (xdrs, &objp->rdp))
+  if (!xdr_u_quad_t (xdrs, &objp->rdp))
     return FALSE;
-  if (!xdr_u_int32_t (xdrs, &objp->mxcsr))
+  if (!xdr_u_int (xdrs, &objp->mxcsr))
     return FALSE;
-  if (!xdr_u_int32_t (xdrs, &objp->mxcr_mask))
+  if (!xdr_u_int (xdrs, &objp->mxcr_mask))
     return FALSE;
   if (!xdr_vector (xdrs, (char *)objp->_st, 8,
                    sizeof (rpc_libc_fpxreg), (xdrproc_t) xdr_rpc_libc_fpxreg))
@@ -168,7 +286,7 @@ bool_t xdr_rpc_libc_fpstate (XDR *xdrs, rpc_libc_fpstate *objp)
                    sizeof (rpc_libc_xmmreg), (xdrproc_t) xdr_rpc_libc_xmmreg))
     return FALSE;
   if (!xdr_vector (xdrs, (char *)objp->padding, 24,
-                   sizeof (u_int32_t), (xdrproc_t) xdr_u_int32_t))
+                   sizeof (u_int), (xdrproc_t) xdr_u_int))
     return FALSE;
   return TRUE;
 }
