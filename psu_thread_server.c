@@ -10,6 +10,7 @@
 
 bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
+  printf("Server received.\n");
   return true;
 }
 
