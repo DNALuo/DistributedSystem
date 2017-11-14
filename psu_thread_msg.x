@@ -12,23 +12,23 @@ struct rpc_libc_fpxreg
 
 struct rpc_libc_xmmreg
 {
-  u_int	element[4];
+  unsigned int	element[4];
 };
 
 struct rpc_libc_fpstate
 {
   /* 64-bit FXSAVE format.  */
-  u_char		cwd;
-  u_char		swd;
-  u_char		ftw;
-  u_char		fop;
-  u_hyper		rip;
-  u_hyper		rdp;
-  u_int		mxcsr;
-  u_int		mxcr_mask;
+  unsigned char		cwd;
+  unsigned char		swd;
+  unsigned char		ftw;
+  unsigned char		fop;
+  unsigned hyper		rip;
+  unsigned hyper		rdp;
+  unsigned int		mxcsr;
+  unsigned int		mxcr_mask;
   struct rpc_libc_fpxreg	_st[8];
   struct rpc_libc_xmmreg	_xmm[16];
-  u_int		padding[24];
+  unsigned int		padding[24];
 };
 
 typedef long int rpc_greg_t;
