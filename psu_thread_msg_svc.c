@@ -12,7 +12,7 @@
 static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, struct thread_data *ptr)
 {
   union argument_union {
-    Context migrate_1_arg;
+    rpc_ucontext migrate_1_arg;
   } *argument = (union argument_union *)malloc(sizeof(union argument_union));
   union result_union{
   } *result = (union result_union *)malloc(sizeof(union result_union));
@@ -26,7 +26,7 @@ static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, s
       return;
 
     case MIGRATE:
-      _xdr_argument = (xdrproc_t) xdr_Context;
+      _xdr_argument = (xdrproc_t) xdr_rpc_ucontext;
       _xdr_result = (xdrproc_t) xdr_void;
       local = (bool_t (*) (char *, void *,  struct svc_req *))migrate_1_svc;
       break;

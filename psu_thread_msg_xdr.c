@@ -1,73 +1,238 @@
-#include "./psu_thread_msg.h"
+#include "psu_thread_msg.h"
 
-bool_t xdr_Context (XDR *xdrs, Context *objp)
+bool_t xdr_rpc__sigset_t (XDR *xdrs, rpc__sigset_t *objp)
 {
   register int32_t *buf;
 
+  int i;
 
   if (xdrs->x_op == XDR_ENCODE) {
-    buf = XDR_INLINE (xdrs, 3 * BYTES_PER_XDR_UNIT);
+    buf = XDR_INLINE (xdrs, ( 16 ) * BYTES_PER_XDR_UNIT);
     if (buf == NULL) {
-      if (!xdr_u_int (xdrs, &objp->uc_mcsize))
+      if (!xdr_vector (xdrs, (char *)objp->__val, 16,
+                       sizeof (u_long), (xdrproc_t) xdr_u_long))
         return FALSE;
-      if (!xdr_int (xdrs, &objp->uc_onstack))
-        return FALSE;
-      if (!xdr_int (xdrs, &objp->us_sigmask))
-        return FALSE;
-
     } else {
-      IXDR_PUT_U_LONG(buf, objp->uc_mcsize);
-      IXDR_PUT_LONG(buf, objp->uc_onstack);
-      IXDR_PUT_LONG(buf, objp->us_sigmask);
+      {
+        register u_long *genp;
+
+        for (i = 0, genp = objp->__val;
+             i < 16; ++i) {
+          IXDR_PUT_U_LONG(buf, *genp++);
+        }
+      }
     }
-    if (!xdr_bytes (xdrs, (char **)&objp->uc_mcontext.uc_mcontext_val, (u_int *) &objp->uc_mcontext.uc_mcontext_len, ~0))
-      return FALSE;
-    if (!xdr_int (xdrs, &objp->ss_flag))
-      return FALSE;
-    if (!xdr_u_int (xdrs, &objp->ss_size))
-      return FALSE;
-    if (!xdr_bytes (xdrs, (char **)&objp->ss_sp.ss_sp_val, (u_int *) &objp->ss_sp.ss_sp_len, ~0))
-      return FALSE;
     return TRUE;
   } else if (xdrs->x_op == XDR_DECODE) {
-    buf = XDR_INLINE (xdrs, 3 * BYTES_PER_XDR_UNIT);
+    buf = XDR_INLINE (xdrs, ( 16 ) * BYTES_PER_XDR_UNIT);
     if (buf == NULL) {
-      if (!xdr_u_int (xdrs, &objp->uc_mcsize))
+      if (!xdr_vector (xdrs, (char *)objp->__val, 16,
+                       sizeof (u_long), (xdrproc_t) xdr_u_long))
         return FALSE;
-      if (!xdr_int (xdrs, &objp->uc_onstack))
-        return FALSE;
-      if (!xdr_int (xdrs, &objp->us_sigmask))
-        return FALSE;
-
     } else {
-      objp->uc_mcsize = IXDR_GET_U_LONG(buf);
-      objp->uc_onstack = IXDR_GET_LONG(buf);
-      objp->us_sigmask = IXDR_GET_LONG(buf);
+      {
+        register u_long *genp;
+
+        for (i = 0, genp = objp->__val;
+             i < 16; ++i) {
+          *genp++ = IXDR_GET_U_LONG(buf);
+        }
+      }
     }
-    if (!xdr_bytes (xdrs, (char **)&objp->uc_mcontext.uc_mcontext_val, (u_int *) &objp->uc_mcontext.uc_mcontext_len, ~0))
-      return FALSE;
-    if (!xdr_int (xdrs, &objp->ss_flag))
-      return FALSE;
-    if (!xdr_u_int (xdrs, &objp->ss_size))
-      return FALSE;
-    if (!xdr_bytes (xdrs, (char **)&objp->ss_sp.ss_sp_val, (u_int *) &objp->ss_sp.ss_sp_len, ~0))
-      return FALSE;
     return TRUE;
   }
 
-  if (!xdr_u_int (xdrs, &objp->uc_mcsize))
+  if (!xdr_vector (xdrs, (char *)objp->__val, 16,
+                   sizeof (u_long), (xdrproc_t) xdr_u_long))
     return FALSE;
-  if (!xdr_int (xdrs, &objp->uc_onstack))
+  return TRUE;
+}
+
+bool_t xdr_rpc_libc_fpxreg (XDR *xdrs, rpc_libc_fpxreg *objp)
+{
+  register int32_t *buf;
+
+  int i;
+
+  if (xdrs->x_op == XDR_ENCODE) {
+    buf = XDR_INLINE (xdrs, (1 +  4  + 3 )* BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->significand, 4,
+                       sizeof (u_short), (xdrproc_t) xdr_u_short))
+        return FALSE;
+      if (!xdr_u_short (xdrs, &objp->exponent))
+        return FALSE;
+      if (!xdr_vector (xdrs, (char *)objp->padding, 3,
+                       sizeof (u_short), (xdrproc_t) xdr_u_short))
+        return FALSE;
+    } else {
+      {
+        register u_short *genp;
+
+        for (i = 0, genp = objp->significand;
+             i < 4; ++i) {
+          IXDR_PUT_U_SHORT(buf, *genp++);
+        }
+      }
+      IXDR_PUT_U_SHORT(buf, objp->exponent);
+      {
+        register u_short *genp;
+
+        for (i = 0, genp = objp->padding;
+             i < 3; ++i) {
+          IXDR_PUT_U_SHORT(buf, *genp++);
+        }
+      }
+    }
+    return TRUE;
+  } else if (xdrs->x_op == XDR_DECODE) {
+    buf = XDR_INLINE (xdrs, (1 +  4  + 3 )* BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->significand, 4,
+                       sizeof (u_short), (xdrproc_t) xdr_u_short))
+        return FALSE;
+      if (!xdr_u_short (xdrs, &objp->exponent))
+        return FALSE;
+      if (!xdr_vector (xdrs, (char *)objp->padding, 3,
+                       sizeof (u_short), (xdrproc_t) xdr_u_short))
+        return FALSE;
+    } else {
+      {
+        register u_short *genp;
+
+        for (i = 0, genp = objp->significand;
+             i < 4; ++i) {
+          *genp++ = IXDR_GET_U_SHORT(buf);
+        }
+      }
+      objp->exponent = IXDR_GET_U_SHORT(buf);
+      {
+        register u_short *genp;
+
+        for (i = 0, genp = objp->padding;
+             i < 3; ++i) {
+          *genp++ = IXDR_GET_U_SHORT(buf);
+        }
+      }
+    }
+    return TRUE;
+  }
+
+  if (!xdr_vector (xdrs, (char *)objp->significand, 4,
+                   sizeof (u_short), (xdrproc_t) xdr_u_short))
+    return FALSE;
+  if (!xdr_u_short (xdrs, &objp->exponent))
+    return FALSE;
+  if (!xdr_vector (xdrs, (char *)objp->padding, 3,
+                   sizeof (u_short), (xdrproc_t) xdr_u_short))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_libc_xmmreg (XDR *xdrs, rpc_libc_xmmreg *objp)
+{
+  register int32_t *buf;
+
+  int i;
+  if (!xdr_vector (xdrs, (char *)objp->element, 4,
+                   sizeof (__uint32_t), (xdrproc_t) xdr___uint32_t))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_libc_fpstate (XDR *xdrs, rpc_libc_fpstate *objp)
+{
+  register int32_t *buf;
+
+  int i;
+  if (!xdr___uint16_t (xdrs, &objp->cwd))
+    return FALSE;
+  if (!xdr___uint16_t (xdrs, &objp->swd))
+    return FALSE;
+  if (!xdr___uint16_t (xdrs, &objp->ftw))
+    return FALSE;
+  if (!xdr___uint16_t (xdrs, &objp->fop))
+    return FALSE;
+  if (!xdr___uint64_t (xdrs, &objp->rip))
+    return FALSE;
+  if (!xdr___uint64_t (xdrs, &objp->rdp))
+    return FALSE;
+  if (!xdr___uint32_t (xdrs, &objp->mxcsr))
+    return FALSE;
+  if (!xdr___uint32_t (xdrs, &objp->mxcr_mask))
+    return FALSE;
+  if (!xdr_vector (xdrs, (char *)objp->_st, 8,
+                   sizeof (rpc_libc_fpxreg), (xdrproc_t) xdr_rpc_libc_fpxreg))
+    return FALSE;
+  if (!xdr_vector (xdrs, (char *)objp->_xmm, 16,
+                   sizeof (rpc_libc_xmmreg), (xdrproc_t) xdr_rpc_libc_xmmreg))
+    return FALSE;
+  if (!xdr_vector (xdrs, (char *)objp->padding, 24,
+                   sizeof (__uint32_t), (xdrproc_t) xdr___uint32_t))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_greg_t (XDR *xdrs, rpc_greg_t *objp)
+{
+  register int32_t *buf;
+
+  if (!xdr_long (xdrs, objp))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_gregset_t (XDR *xdrs, rpc_gregset_t objp)
+{
+  register int32_t *buf;
+
+  if (!xdr_vector (xdrs, (char *)objp, 19,
+                   sizeof (rpc_greg_t), (xdrproc_t) xdr_rpc_greg_t))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_mcontext (XDR *xdrs, rpc_mcontext *objp)
+{
+  register int32_t *buf;
+
+  if (!xdr_rpc_gregset_t (xdrs, objp->gregs))
+    return FALSE;
+  if (!xdr_rpc_libc_fpstate (xdrs, &objp->fpregs))
+    return FALSE;
+  if (!xdr_u_long (xdrs, &objp->oldmask))
+    return FALSE;
+  if (!xdr_u_long (xdrs, &objp->cr2))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_stack_t (XDR *xdrs, rpc_stack_t *objp)
+{
+  register int32_t *buf;
+
+  if (!xdr_int (xdrs, &objp->ss_flag))
+    return FALSE;
+  if (!xdr_bytes (xdrs, (char **)&objp->ss_sp.ss_sp_val, (u_int *) &objp->ss_sp.ss_sp_len, ~0))
+    return FALSE;
+  return TRUE;
+}
+
+bool_t xdr_rpc_ucontext (XDR *xdrs, rpc_ucontext *objp)
+{
+  register int32_t *buf;
+
+  if (!xdr_u_long (xdrs, &objp->uc_flags))
+    return FALSE;
+  if (!xdr_rpc_stack_t (xdrs, &objp->uc_stack))
+    return FALSE;
+  if (!xdr_rpc_mcontext (xdrs, &objp->uc_mcontext))
+    return FALSE;
+  if (!xdr_rpc__sigset_t (xdrs, &objp->uc_sigmask))
     return FALSE;
   if (!xdr_int (xdrs, &objp->us_sigmask))
     return FALSE;
-  if (!xdr_bytes (xdrs, (char **)&objp->uc_mcontext.uc_mcontext_val, (u_int *) &objp->uc_mcontext.uc_mcontext_len, ~0))
-    return FALSE;
-  if (!xdr_int (xdrs, &objp->ss_flag))
-    return FALSE;
-  if (!xdr_u_int (xdrs, &objp->ss_size))
-    return FALSE;
-  if (!xdr_bytes (xdrs, (char **)&objp->ss_sp.ss_sp_val, (u_int *) &objp->ss_sp.ss_sp_len, ~0))
+  if (!xdr_rpc_libc_fpstate (xdrs, &objp->__fpregs_mem))
     return FALSE;
   return TRUE;
 }
