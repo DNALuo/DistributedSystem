@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
     printf("Usage: toy_app1 <ip_addr_to_migrate_to>\n");
     exit(1);
   }
+  printf("Creating thread.\n");
   strcpy(REMOTE_IP_ADDR, argv[1]);
   psu_thread_info_t t_info;
   psu_thread_create(&t_info, foo, NULL);
+  printf("Thread created.\n");
 }
