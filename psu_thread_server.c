@@ -8,7 +8,7 @@
 #include "utility.h"
 #include "psu_thread_msg.h"
 
-bool_t migrate_1_svc(Context *context, void *res, struct svc_req *req)
+bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
   return true;
 }
