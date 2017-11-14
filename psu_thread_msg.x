@@ -33,16 +33,14 @@ struct rpc_libc_fpstate
 
 typedef long int rpc_greg_t;
 
-typedef rpc_greg_t rpc_gregset_t[19];
+typedef rpc_greg_t rpc_gregset_t[23];
 
 struct rpc_mcontext
 {
   rpc_gregset_t gregs;
-  /* Due to Linux's history we have to use a pointer here.  The SysV/i386
-     ABI requires a struct with the values.  */
+  /* Note that fpregs is a pointer.  */
   struct rpc_libc_fpstate fpregs;
-  unsigned long int oldmask;
-  unsigned long int cr2;
+  unsigned long __reserved1 [8];
 };
 
 struct rpc_stack_t
