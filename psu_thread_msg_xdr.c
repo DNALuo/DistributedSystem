@@ -230,8 +230,6 @@ bool_t xdr_rpc_ucontext (XDR *xdrs, rpc_ucontext *objp)
     return FALSE;
   if (!xdr_rpc__sigset_t (xdrs, &objp->uc_sigmask))
     return FALSE;
-  if (!xdr_int (xdrs, &objp->us_sigmask))
-    return FALSE;
   if (!xdr_rpc_libc_fpstate (xdrs, &objp->__fpregs_mem))
     return FALSE;
   return TRUE;

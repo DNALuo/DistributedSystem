@@ -67,7 +67,6 @@ struct rpc_ucontext {
   rpc_stack_t uc_stack;
   rpc_mcontext uc_mcontext;
   rpc__sigset_t uc_sigmask;
-  int us_sigmask;
   struct rpc_libc_fpstate __fpregs_mem;
 };
 typedef struct rpc_ucontext rpc_ucontext;
