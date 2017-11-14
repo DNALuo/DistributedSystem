@@ -64,7 +64,7 @@ struct rpc_ucontext
 
 program PSU_THREAD {
   version PSU_THREAD_V1 {
-    void MIGRATE(Context) = 1;
+    void MIGRATE(rpc_ucontext) = 1;
   } = 1;
 } = 0x3ffffff;
 
