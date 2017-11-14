@@ -135,7 +135,7 @@ bool_t xdr_rpc_libc_xmmreg (XDR *xdrs, rpc_libc_xmmreg *objp)
 
   int i;
   if (!xdr_vector (xdrs, (char *)objp->element, 4,
-                   sizeof (__uint32_t), (xdrproc_t) xdr___uint32_t))
+                   sizeof (u_int32_t), (xdrproc_t) xdr_u_int32_t))
     return FALSE;
   return TRUE;
 }
@@ -145,21 +145,21 @@ bool_t xdr_rpc_libc_fpstate (XDR *xdrs, rpc_libc_fpstate *objp)
   register int32_t *buf;
 
   int i;
-  if (!xdr___uint16_t (xdrs, &objp->cwd))
+  if (!xdr_u_int16_t (xdrs, &objp->cwd))
     return FALSE;
-  if (!xdr___uint16_t (xdrs, &objp->swd))
+  if (!xdr_u_int16_t (xdrs, &objp->swd))
     return FALSE;
-  if (!xdr___uint16_t (xdrs, &objp->ftw))
+  if (!xdr_u_int16_t (xdrs, &objp->ftw))
     return FALSE;
-  if (!xdr___uint16_t (xdrs, &objp->fop))
+  if (!xdr_u_int16_t (xdrs, &objp->fop))
     return FALSE;
-  if (!xdr___uint64_t (xdrs, &objp->rip))
+  if (!xdr_u_int64_t (xdrs, &objp->rip))
     return FALSE;
-  if (!xdr___uint64_t (xdrs, &objp->rdp))
+  if (!xdr_u_int64_t (xdrs, &objp->rdp))
     return FALSE;
-  if (!xdr___uint32_t (xdrs, &objp->mxcsr))
+  if (!xdr_u_int32_t (xdrs, &objp->mxcsr))
     return FALSE;
-  if (!xdr___uint32_t (xdrs, &objp->mxcr_mask))
+  if (!xdr_u_int32_t (xdrs, &objp->mxcr_mask))
     return FALSE;
   if (!xdr_vector (xdrs, (char *)objp->_st, 8,
                    sizeof (rpc_libc_fpxreg), (xdrproc_t) xdr_rpc_libc_fpxreg))
@@ -168,7 +168,7 @@ bool_t xdr_rpc_libc_fpstate (XDR *xdrs, rpc_libc_fpstate *objp)
                    sizeof (rpc_libc_xmmreg), (xdrproc_t) xdr_rpc_libc_xmmreg))
     return FALSE;
   if (!xdr_vector (xdrs, (char *)objp->padding, 24,
-                   sizeof (__uint32_t), (xdrproc_t) xdr___uint32_t))
+                   sizeof (u_int32_t), (xdrproc_t) xdr_u_int32_t))
     return FALSE;
   return TRUE;
 }
@@ -186,7 +186,7 @@ bool_t xdr_rpc_gregset_t (XDR *xdrs, rpc_gregset_t objp)
 {
   register int32_t *buf;
 
-  if (!xdr_vector (xdrs, (char *)objp, 19,
+  if (!xdr_vector (xdrs, (char *)objp, 23,
                    sizeof (rpc_greg_t), (xdrproc_t) xdr_rpc_greg_t))
     return FALSE;
   return TRUE;
@@ -196,13 +196,58 @@ bool_t xdr_rpc_mcontext (XDR *xdrs, rpc_mcontext *objp)
 {
   register int32_t *buf;
 
+  int i;
+
+  if (xdrs->x_op == XDR_ENCODE) {
+    if (!xdr_rpc_gregset_t (xdrs, objp->gregs))
+      return FALSE;
+    if (!xdr_rpc_libc_fpstate (xdrs, &objp->fpregs))
+      return FALSE;
+    buf = XDR_INLINE (xdrs, ( 8 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->__reserved1, 8,
+                       sizeof (u_long), (xdrproc_t) xdr_u_long))
+        return FALSE;
+    } else {
+      {
+        register u_long *genp;
+
+        for (i = 0, genp = objp->__reserved1;
+             i < 8; ++i) {
+          IXDR_PUT_U_LONG(buf, *genp++);
+        }
+      }
+    }
+    return TRUE;
+  } else if (xdrs->x_op == XDR_DECODE) {
+    if (!xdr_rpc_gregset_t (xdrs, objp->gregs))
+      return FALSE;
+    if (!xdr_rpc_libc_fpstate (xdrs, &objp->fpregs))
+      return FALSE;
+    buf = XDR_INLINE (xdrs, ( 8 ) * BYTES_PER_XDR_UNIT);
+    if (buf == NULL) {
+      if (!xdr_vector (xdrs, (char *)objp->__reserved1, 8,
+                       sizeof (u_long), (xdrproc_t) xdr_u_long))
+        return FALSE;
+    } else {
+      {
+        register u_long *genp;
+
+        for (i = 0, genp = objp->__reserved1;
+             i < 8; ++i) {
+          *genp++ = IXDR_GET_U_LONG(buf);
+        }
+      }
+    }
+    return TRUE;
+  }
+
   if (!xdr_rpc_gregset_t (xdrs, objp->gregs))
     return FALSE;
   if (!xdr_rpc_libc_fpstate (xdrs, &objp->fpregs))
     return FALSE;
-  if (!xdr_u_long (xdrs, &objp->oldmask))
-    return FALSE;
-  if (!xdr_u_long (xdrs, &objp->cr2))
+  if (!xdr_vector (xdrs, (char *)objp->__reserved1, 8,
+                   sizeof (u_long), (xdrproc_t) xdr_u_long))
     return FALSE;
   return TRUE;
 }

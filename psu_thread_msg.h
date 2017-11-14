@@ -1,5 +1,4 @@
 #pragma once
-
 #include <rpc/rpc.h>
 
 #include <pthread.h>
@@ -22,34 +21,33 @@ struct rpc_libc_fpxreg {
 typedef struct rpc_libc_fpxreg rpc_libc_fpxreg;
 
 struct rpc_libc_xmmreg {
-  __uint32_t element[4];
+  u_int32_t element[4];
 };
 typedef struct rpc_libc_xmmreg rpc_libc_xmmreg;
 
 struct rpc_libc_fpstate {
-  __uint16_t cwd;
-  __uint16_t swd;
-  __uint16_t ftw;
-  __uint16_t fop;
-  __uint64_t rip;
-  __uint64_t rdp;
-  __uint32_t mxcsr;
-  __uint32_t mxcr_mask;
+  u_int16_t cwd;
+  u_int16_t swd;
+  u_int16_t ftw;
+  u_int16_t fop;
+  u_int64_t rip;
+  u_int64_t rdp;
+  u_int32_t mxcsr;
+  u_int32_t mxcr_mask;
   struct rpc_libc_fpxreg _st[8];
   struct rpc_libc_xmmreg _xmm[16];
-  __uint32_t padding[24];
+  u_int32_t padding[24];
 };
 typedef struct rpc_libc_fpstate rpc_libc_fpstate;
 
 typedef long rpc_greg_t;
 
-typedef rpc_greg_t rpc_gregset_t[19];
+typedef rpc_greg_t rpc_gregset_t[23];
 
 struct rpc_mcontext {
   rpc_gregset_t gregs;
   struct rpc_libc_fpstate fpregs;
-  u_long oldmask;
-  u_long cr2;
+  u_long __reserved1[8];
 };
 typedef struct rpc_mcontext rpc_mcontext;
 
