@@ -37,8 +37,9 @@ static void parse_thread_data(struct svc_req *rqstp, register SVCXPRT *transp, s
   }
   memset ((char *)argument, 0, sizeof (*argument));
   if (!svc_getargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) argument)) {
+    fprintf(stderr, "Error parsing arguments.\n");
     svcerr_decode (transp);
-    return;
+    exit(1);
   }
 
   PACK_THREAD_DATA(ptr);
