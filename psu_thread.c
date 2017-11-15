@@ -28,7 +28,7 @@ int psu_thread_migrate(char* node)
   cont->uc_flags = context.uc_flags;
 
   // ucontext.stack_t
-  cont->uc_stack.ss_flag = context.uc_stack.ss_flags;
+  cont->uc_stack.ss_flags = context.uc_stack.ss_flags;
   cont->uc_stack.ss_sp.ss_sp_val = (char *)malloc(sizeof(char) * context.uc_stack.ss_size);
   memcpy(cont->uc_stack.ss_sp.ss_sp_val, context.uc_stack.ss_sp, sizeof(char) * context.uc_stack.ss_size);
   cont->uc_stack.ss_sp.ss_sp_len = (u_int)context.uc_stack.ss_size;

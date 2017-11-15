@@ -45,7 +45,7 @@ struct rpc_mcontext
 
 struct rpc_stack_t
 {
-  int ss_flag;
+  int ss_flags;
   opaque ss_sp<>;
 };
 
