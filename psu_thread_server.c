@@ -18,7 +18,7 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
   cont.uc_flags = context->uc_flags;
 
   // ucontext.stack_t
-  cont.uc_stack.ss_flag = context->uc_stack.ss_flags;
+  cont.uc_stack.ss_flag = context->uc_stack.ss_flag;
   cont.uc_stack.ss_sp = context->uc_stack.ss_sp.ss_sp_val;
   cont.uc_stack.ss_size = context->uc_stack.ss_sp.ss_sp_len;
 
