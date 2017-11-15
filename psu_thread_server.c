@@ -9,6 +9,7 @@
 #include "psu_thread_msg.h"
 #define _XOPEN_SOURCE
 #include <ucontext.h>
+#include <signal.h>
 
 bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
