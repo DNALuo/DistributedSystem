@@ -1,5 +1,9 @@
 #include "psu_thread_msg.h"
 
+#define xdr_u_int16_t xdr_u_short
+#define xdr_u_int32_t xdr_u_int
+#define xdr_u_int64_t xdr_u_hyper
+
 bool_t xdr_rpc__sigset_t (XDR *xdrs, rpc__sigset_t *objp)
 {
   register int32_t *buf;
