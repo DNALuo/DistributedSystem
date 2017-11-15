@@ -150,7 +150,7 @@ bool_t xdr_rpc_stack_t (XDR *xdrs, rpc_stack_t *objp)
 {
   register int32_t *buf;
 
-  if (!xdr_int (xdrs, &objp->ss_flag))
+  if (!xdr_int (xdrs, &objp->ss_flags))
     return FALSE;
   if (!xdr_bytes (xdrs, (char **)&objp->ss_sp.ss_sp_val, (u_int *) &objp->ss_sp.ss_sp_len, ~0))
     return FALSE;
