@@ -1,27 +1,27 @@
 struct rpc__sigset_t
 {
-  unsigned long int __val[16];
+  unsigned hyper __val[16];
 };
 
 struct rpc_libc_fpxreg
 {
-  unsigned short int significand[4];
-  unsigned short int exponent;
-  unsigned short int padding[3];
+  unsigned int significand[4];
+  unsigned int exponent;
+  unsigned int padding[3];
 };
 
 struct rpc_libc_xmmreg
 {
-  unsigned int	element[4];
+  unsigned int element[4];
 };
 
 struct rpc_libc_fpstate
 {
   /* 64-bit FXSAVE format.  */
-  unsigned char		cwd;
-  unsigned char		swd;
-  unsigned char		ftw;
-  unsigned char		fop;
+  unsigned int		cwd;
+  unsigned int		swd;
+  unsigned int		ftw;
+  unsigned int		fop;
   unsigned hyper		rip;
   unsigned hyper		rdp;
   unsigned int		mxcsr;
@@ -31,7 +31,7 @@ struct rpc_libc_fpstate
   unsigned int		padding[24];
 };
 
-typedef long int rpc_greg_t;
+typedef hyper rpc_greg_t;
 
 typedef rpc_greg_t rpc_gregset_t[23];
 
@@ -40,7 +40,7 @@ struct rpc_mcontext
   rpc_gregset_t gregs;
   /* Note that fpregs is a pointer.  */
   struct rpc_libc_fpstate fpregs;
-  unsigned long __reserved1 [8];
+  unsigned hyper __reserved1 [8];
 };
 
 struct rpc_stack_t
