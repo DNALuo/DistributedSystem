@@ -9,7 +9,7 @@
 
 #define _XOPEN_SOURCE
 #include <ucontext.h>
-
+#include <stdbool.h>
 
 
 int psu_thread_create(psu_thread_info_t* t_info, void* (*start_routine)(void*), void* args)
@@ -21,9 +21,13 @@ int psu_thread_create(psu_thread_info_t* t_info, void* (*start_routine)(void*), 
 
 int psu_thread_migrate(char* node)
 {
+  bool has_migrated = false;
   ucontext_t context;
   getcontext(&context);
-  CLIENT *client = create_client(node, PSU_THREAD, PSU_THREAD_V1, "tcp");
+  if(has_migrated)
+    return 1;
+
+  // prepare the argument
   rpc_ucontext *cont = (rpc_ucontext *)malloc(sizeof(rpc_ucontext));
   cont->uc_flags = context.uc_flags;
 
@@ -42,7 +46,9 @@ int psu_thread_migrate(char* node)
 
   memcpy(&cont->__fpregs_mem, &context.__fpregs_mem, sizeof(rpc_libc_fpstate));
 
+  CLIENT *client = create_client(node, PSU_THREAD, PSU_THREAD_V1, "tcp");
   void *result = NULL;
+  has_migrated = true;
   migrate_1(cont, &result, client);
   clnt_destroy(client);
 }
