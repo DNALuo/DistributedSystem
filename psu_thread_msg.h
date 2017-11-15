@@ -10,14 +10,14 @@ extern "C" {
 
 
 struct rpc__sigset_t {
-  u_quad_t __val[16];
+  u_int64_t __val[16];
 };
 typedef struct rpc__sigset_t rpc__sigset_t;
 
 struct rpc_libc_fpxreg {
-  u_int significand[4];
-  u_int exponent;
-  u_int padding[3];
+  u_int16_t significand[4];
+  u_int16_t exponent;
+  u_int16_t padding[3];
 };
 typedef struct rpc_libc_fpxreg rpc_libc_fpxreg;
 
@@ -27,28 +27,28 @@ struct rpc_libc_xmmreg {
 typedef struct rpc_libc_xmmreg rpc_libc_xmmreg;
 
 struct rpc_libc_fpstate {
-  u_int cwd;
-  u_int swd;
-  u_int ftw;
-  u_int fop;
-  u_quad_t rip;
-  u_quad_t rdp;
-  u_int mxcsr;
-  u_int mxcr_mask;
+  u_int16_t cwd;
+  u_int16_t swd;
+  u_int16_t ftw;
+  u_int16_t fop;
+  u_int64_t rip;
+  u_int64_t rdp;
+  u_int32_t mxcsr;
+  u_int32_t mxcr_mask;
   struct rpc_libc_fpxreg _st[8];
   struct rpc_libc_xmmreg _xmm[16];
-  u_int padding[24];
+  u_int32_t padding[24];
 };
 typedef struct rpc_libc_fpstate rpc_libc_fpstate;
 
-typedef quad_t rpc_greg_t;
+typedef u_int64_t rpc_greg_t;
 
 typedef rpc_greg_t rpc_gregset_t[23];
 
 struct rpc_mcontext {
   rpc_gregset_t gregs;
   struct rpc_libc_fpstate fpregs;
-  u_quad_t __reserved1[8];
+  u_int64_t __reserved1[8];
 };
 typedef struct rpc_mcontext rpc_mcontext;
 
@@ -62,7 +62,7 @@ struct rpc_stack_t {
 typedef struct rpc_stack_t rpc_stack_t;
 
 struct rpc_ucontext {
-  u_long uc_flags;
+  u_int64_t uc_flags;
   rpc_stack_t uc_stack;
   rpc_mcontext uc_mcontext;
   rpc__sigset_t uc_sigmask;
