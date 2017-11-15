@@ -10,14 +10,14 @@ extern "C" {
 
 
 struct rpc__sigset_t {
-  u_long __val[16];
+  u_quad_t __val[16];
 };
 typedef struct rpc__sigset_t rpc__sigset_t;
 
 struct rpc_libc_fpxreg {
-  u_short significand[4];
-  u_short exponent;
-  u_short padding[3];
+  u_int significand[4];
+  u_int exponent;
+  u_int padding[3];
 };
 typedef struct rpc_libc_fpxreg rpc_libc_fpxreg;
 
@@ -27,10 +27,10 @@ struct rpc_libc_xmmreg {
 typedef struct rpc_libc_xmmreg rpc_libc_xmmreg;
 
 struct rpc_libc_fpstate {
-  u_char cwd;
-  u_char swd;
-  u_char ftw;
-  u_char fop;
+  u_int cwd;
+  u_int swd;
+  u_int ftw;
+  u_int fop;
   u_quad_t rip;
   u_quad_t rdp;
   u_int mxcsr;
@@ -41,14 +41,14 @@ struct rpc_libc_fpstate {
 };
 typedef struct rpc_libc_fpstate rpc_libc_fpstate;
 
-typedef long rpc_greg_t;
+typedef quad_t rpc_greg_t;
 
 typedef rpc_greg_t rpc_gregset_t[23];
 
 struct rpc_mcontext {
   rpc_gregset_t gregs;
   struct rpc_libc_fpstate fpregs;
-  u_long __reserved1[8];
+  u_quad_t __reserved1[8];
 };
 typedef struct rpc_mcontext rpc_mcontext;
 
