@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <stdbool.h>
 #include <glib.h>
-#include <unistd.h>
 #include "utility.h"
 #include "psu_thread_msg.h"
-#define _XOPEN_SOURCE
+
 #include <ucontext.h>
-#include <signal.h>
 
 bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
@@ -37,6 +34,12 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
   memcpy(&cont.__fpregs_mem, &context->__fpregs_mem, sizeof(struct _libc_fpstate));
 
   printf("Setting the context.\n");
+
+  ucontext_t my_context;
+  getcontext(&my_context);
+
+  cont.uc_link = &my_context;
+
   setcontext(&cont);
   return true;
 }
