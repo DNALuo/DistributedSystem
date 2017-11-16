@@ -15,7 +15,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR})
 
-foreach(TASK psu_dist_lock_mgr psu_thread)
+foreach(TASK psu_dist_lock_mgr)
     add_executable(${TASK}_test ${TASK}_test.c
             ${TASK}_msg.h
             ${TASK}_msg_clnt.c
@@ -33,3 +33,12 @@ foreach(TASK psu_dist_lock_mgr psu_thread)
     target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} pthread)
     target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} pthread)
 endforeach()
+
+add_executable(psu_thread_test psu_thread_test.c psu_thread_server.c
+        psu_thread_msg.h
+        psu_thread_msg_svc.c
+        psu_thread_msg_clnt.c
+        psu_thread_msg_xdr.c
+        psu_thread.c
+        utility.c)
+target_link_libraries(psu_thread_test ${GLIB_LIBRARIES} pthread)
