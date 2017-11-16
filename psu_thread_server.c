@@ -16,6 +16,9 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
   printf("Server received.\n");
   ucontext_t cont;
 
+  // initialize the context
+  getcontext(&cont);
+
   cont.uc_flags = context->uc_flags;
 
   // ucontext.stack_t
