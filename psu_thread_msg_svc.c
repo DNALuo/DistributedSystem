@@ -47,7 +47,7 @@ static void run(struct svc_req *rqstp, register SVCXPRT *transp)
   dispatcher(rqstp, transp, parse_thread_data, psu_thread_1_freeresult);
 }
 
-int main (int argc, char **argv)
+int main_svc (int argc, char **argv)
 {
   register SVCXPRT *transp;
 
