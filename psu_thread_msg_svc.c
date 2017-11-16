@@ -1,8 +1,5 @@
-#include "./psu_thread_msg.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "psu_thread_msg.h"
 #include <rpc/pmap_clnt.h>
-#include <string.h>
 #include "utility.h"
 
 #ifndef SIG_PF
