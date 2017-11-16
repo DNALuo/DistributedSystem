@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "psu_thread.h"
 #include <signal.h>
 #include <stdlib.h>
@@ -6,8 +7,6 @@
 #include <glib.h>
 #include "utility.h"
 #include "psu_thread_msg.h"
-
-#define _XOPEN_SOURCE
 #include <ucontext.h>
 #include <sys/ucontext.h>
 #include <stdbool.h>
@@ -42,7 +41,7 @@ int psu_thread_migrate(char* node)
   pthread_attr_t attr;
   pthread_getattr_np(pthread_self(), &attr);
   void *stack = NULL;
-  size_t stack_size = NULL;
+  size_t stack_size = 0;
   pthread_attr_getstack(&attr, &stack, &stack_size);
   context.uc_stack.ss_sp = stack;
   context.uc_stack.ss_size = stack_size;
