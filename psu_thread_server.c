@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,7 +37,9 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 
   memcpy(&cont.__fpregs_mem, &context->__fpregs_mem, sizeof(struct _libc_fpstate));
 
-  printf("Setting the context.\n");
+    cont.uc_mcontext.gregs[REG_RSP] = cont.uc_stack.ss_sp;
+
+
 
   ucontext_t *my_context = (ucontext_t *)malloc(sizeof(ucontext_t));
   getcontext(my_context);
@@ -47,7 +50,10 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
     pid_t pid = 0;
     pid = fork();
     if(pid == 0)
+    {
+      printf("Setting the context.\n");
       setcontext(&cont);
+    }
   }
 
   return true;
