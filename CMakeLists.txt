@@ -35,7 +35,7 @@ foreach(TASK psu_dist_lock_mgr)
 endforeach()
 
 foreach(TASK psu_dsm)
-    add_executable(${TASK}_test ${TASK}_test.c
+    add_executable(${TASK}_test ${TASK}_test.c ${TASK}_server.c
             ${TASK}_msg.h
             ${TASK}_msg_clnt.c
             ${TASK}_msg_xdr.c
