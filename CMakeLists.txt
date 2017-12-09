@@ -10,7 +10,7 @@ link_directories(${GLIB_LIBRARY_DIRS})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR})
@@ -33,3 +33,12 @@ foreach(TASK psu_dist_lock_mgr)
     target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} pthread)
     target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} pthread)
 endforeach()
+
+add_executable(psu_thread_test psu_thread_test.c psu_thread_server.c
+        psu_thread_msg.h
+        psu_thread_msg_svc.c
+        psu_thread_msg_clnt.c
+        psu_thread_msg_xdr.c
+        psu_thread.c
+        utility.c)
+target_link_libraries(psu_thread_test ${GLIB_LIBRARIES} pthread)
