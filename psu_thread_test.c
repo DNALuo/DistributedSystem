@@ -22,10 +22,12 @@ void print_hostname()
 
 void* foo(void* arg)
 {
+  int x = 1;
   print_hostname();
   printf("Foo:Hello.....\n");
   psu_thread_migrate(REMOTE_IP_ADDR);
   print_hostname();
+  printf("Variable x: %d\n", x);
   printf("Foo:.....World\n");
   return NULL;
 }
