@@ -16,6 +16,18 @@ The test program is to create 3 threads acquiring lock No.1 (2 threads) and lock
 
 ### Distributed Memory System
 
+On each machine, server and client share memory at regions created by `shmget()`.
+
+Each server maintains a directory, as well as a list of shared memory currently on this server.
+
+On `psu_dsm_malloc()` call, the client sends a msg to local server.  The local server contacts all servers (including itself) to find who's directory has the name, then it sends a request to that server to request the page. Upon receiving the request, the name server checks its directory, fetch the page from the right server, sends out update massage (either to invalidate the page or change to read only mode) to all servers that has the page, update its directory, then return the page to the requesting server.
+
+The shared memory is protected by `mprotect()`. If a shared memory is accessed without permission, a SIGSEGV signal is generated. The signal is caught by a handler which will check the faulting operation (read or write) and faulting address, then send a request to local server to locate the name(dir) server, then send a request to fetch the page and put it in the right mode.
+
+The `psu_dsm_free()` will send a request local server to find the name(dir) server, then ask the name server to instruct all servers with this page  to invalidate it and detach shared memory.
+
+For the user, `psu_dsm_init()` has to be called first to register the signal handler.
+
 ### Thread Migrator
 
 The thread migrator uses the Linux's `ucontext` related functions. By copying the context of the original thread and send it to the target server over RPC calls.
