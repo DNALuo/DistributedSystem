@@ -16,6 +16,8 @@ The test program is to create 3 threads acquiring lock No.1 (2 threads) and lock
 
 ### Distributed Memory System
 
+The DSM manager utilizes Linux signal handling and system calls for memory management, such as mprotect() and shmget.
+
 On each machine, server and client share memory at regions created by `shmget()`.
 
 Each server maintains a directory, as well as a list of shared memory currently on this server.
