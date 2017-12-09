@@ -7,9 +7,11 @@
 #include "psu_thread_msg.h"
 
 #include <ucontext.h>
+#include <sys/ucontext.h>
 
 bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
+  bool has_set_context = false;
   printf("Server received.\n");
   ucontext_t cont;
 
@@ -35,12 +37,16 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 
   printf("Setting the context.\n");
 
-  ucontext_t my_context;
-  getcontext(&my_context);
+  ucontext_t *my_context = (ucontext_t *)malloc(sizeof(ucontext_t));
+  getcontext(my_context);
+  if(!has_set_context)
+  {
+    cont.uc_link = my_context;
+    has_set_context = true;
+    setcontext(&cont);
+    printf("never here\n");
+  }
 
-  cont.uc_link = &my_context;
-
-  setcontext(&cont);
   return true;
 }
 
