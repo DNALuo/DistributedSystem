@@ -8,6 +8,7 @@
 
 #include <ucontext.h>
 #include <sys/ucontext.h>
+#include <unistd.h>
 
 bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
 {
@@ -43,8 +44,10 @@ bool_t migrate_1_svc(rpc_ucontext *context, void *res, struct svc_req *req)
   {
     cont.uc_link = my_context;
     has_set_context = true;
-    setcontext(&cont);
-    printf("never here\n");
+    pid_t pid = 0;
+    pid = fork();
+    if(pid == 0)
+      setcontext(&cont);
   }
 
   return true;
