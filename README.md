@@ -10,6 +10,9 @@ The server is transformed into a multi-threaded server which can handle multiple
 Since the original RPC system doesn't take multi-threading into their designs, many of the RPC functions are not thread-safe and we used some mutex to guard the functions to make them thread-safe.
 The thread-safe version of the RPC functions lie in utility.h and utility.c files.
 
+The test program is to create 3 threads acquiring lock No.1 (2 threads) and lock No.2(1 thread), it needs to provide nodes information on commandline argument. Like
+`./psu_dist_lock_mgr_test <node_ip_1> <node_ip_2> ...`
+
 
 ### Distributed Memory System
 
