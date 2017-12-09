@@ -8,6 +8,8 @@
 #include "psu_dsm_msg.h"
 #include "psu_dsm_msg_svc.h"
 
+extern serverid_t server[MAX_SERV];
+
 unsigned long
 hash(unsigned char *str)
 {
