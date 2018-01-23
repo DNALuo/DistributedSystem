@@ -15,43 +15,41 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR})
 
-foreach(TASK psu_dist_lock_mgr)
-    add_executable(${TASK}_test ${TASK}_test.c
-            ${TASK}_msg.h
-            ${TASK}_msg_clnt.c
-            ${TASK}_msg_xdr.c
-            ${TASK}.c
-            utility.c)
+add_executable(psu_dist_lock_mgr_test psu_dist_lock_mgr_test.c
+        psu_dist_lock_mgr_msg.h
+        psu_dist_lock_mgr_msg_clnt.c
+        psu_dist_lock_mgr_msg_xdr.c
+        psu_dist_lock_mgr.c
+        utility.c)
 
-    add_executable(${TASK}_server ${TASK}_server.c
-            ${TASK}_msg.h
-            ${TASK}_msg_clnt.c
-            ${TASK}_msg_svc.c
-            ${TASK}_msg_xdr.c
-            utility.c)
+add_executable(psu_dist_lock_mgr_server psu_dist_lock_mgr_server.c
+        psu_dist_lock_mgr_msg.h
+        psu_dist_lock_mgr_msg_clnt.c
+        psu_dist_lock_mgr_msg_svc.c
+        psu_dist_lock_mgr_msg_xdr.c
+        utility.c)
 
-    target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} pthread)
-    target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} pthread)
-endforeach()
+target_link_libraries(psu_dist_lock_mgr_test ${GLIB_LIBRARIES} pthread)
+target_link_libraries(psu_dist_lock_mgr_server ${GLIB_LIBRARIES} pthread)
 
-foreach(TASK psu_dsm)
-    add_executable(${TASK}_test ${TASK}_test.c ${TASK}_server.c
-            ${TASK}_msg.h
-            ${TASK}_msg_clnt.c
-            ${TASK}_msg_xdr.c
-            ${TASK}.c
-            util.c)
 
-    add_executable(${TASK}_server ${TASK}_server.c
-            ${TASK}_msg.h
-            ${TASK}_msg_clnt.c
-            ${TASK}_msg_svc.c
-            ${TASK}_msg_xdr.c
-            util.c)
+add_executable(psu_dsm_test psu_dsm_test.c psu_dsm_server.c
+        psu_dsm_msg.h
+        psu_dsm_msg_clnt.c
+        psu_dsm_msg_xdr.c
+        psu_dsm.c
+        util.c)
 
-    target_link_libraries(${TASK}_test ${GLIB_LIBRARIES} pthread)
-    target_link_libraries(${TASK}_server ${GLIB_LIBRARIES} pthread)
-endforeach()
+add_executable(psu_dsm_server psu_dsm_server.c
+        psu_dsm_msg.h
+        psu_dsm_msg_clnt.c
+        psu_dsm_msg_svc.c
+        psu_dsm_msg_xdr.c
+        util.c)
+
+target_link_libraries(psu_dsm_test ${GLIB_LIBRARIES} pthread)
+target_link_libraries(psu_dsm_server ${GLIB_LIBRARIES} pthread)
+
 
 add_executable(psu_thread_test psu_thread_test.c psu_thread_server.c
         psu_thread_msg.h
